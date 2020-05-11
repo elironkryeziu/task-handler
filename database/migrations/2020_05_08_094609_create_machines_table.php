@@ -16,6 +16,7 @@ class CreateMachinesTable extends Migration
         Schema::create('machines', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
+            $table->string('label', 50);
             $table->double('norm1', 8, 2)->nullable();	
             $table->string('unit1', 10)->nullable();
             $table->double('norm2', 8, 2)->nullable();
