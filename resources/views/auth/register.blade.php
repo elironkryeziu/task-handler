@@ -9,7 +9,7 @@
             <div class="py-10 text-center">
             </div>
             <div class="bg-white rounded shadow">
-                <div class="bg-teal-400 border-b py-8 font-bold text-white text-center text-xl tracking-widest uppercase">
+                <div class="bg-blue-500 border-b py-8 font-bold text-white text-center text-xl tracking-widest uppercase">
                     REGISTER 
                 </div>
 
@@ -30,7 +30,7 @@
                     </div>
                     <div class="flex">
                       <!-- sm:w-full rounded p-2   -->
-                        <button class="bg-teal-400 hover:bg-teal-300 w-full p-4 text-sm text-white uppercase font-bold tracking-wider">
+                        <button class="bg-blue-500 hover:bg-teal-300 w-full p-4 text-sm text-white uppercase font-bold tracking-wider">
                             Register
                         </button>
                     </div>
