@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Machine;
 use App\TimerSaw;
 use Carbon\Carbon;
 use App\TimerAkron;
@@ -20,6 +21,7 @@ use App\TimerBiesseFdt;
 use App\TimerUkosiarki;
 use App\TimerDolnowrzecionowki;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class fillTimers extends Command
 {
@@ -54,26 +56,56 @@ class fillTimers extends Command
      */
     public function handle()
     {
-        $this->fillTimer('selco', '08:00', '10:30', 10, 1);
-        // $this->fillTimer('press', '08:00', '10:30', 10, 1);
+        // $machines = array("timer_selco", "timer_press", "timer_homag",
+        // "timer_biesse_sb", "timer_biesse_b1", "timer_akron",
+        // "timer_skiper", "timer_biesse_fdt", "timer_saw",
+        // "timer_frezarki", "timer_dolnowrzecionowki", "timer_ukosiarki",
+        // "timer_ukocia", "timer_packing", "timer_kartony", "timer_montaz");
+
+        // foreach($machines as $table)
+        // {
+        //     DB::table($table)->truncate();
+        //     echo "Table ".$table." truncated \n";
+        // }
+
+
+        $machines = Machine::all();
+        
+        foreach ($machines as $machine)
+        {
+            $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
+            $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
+
+            $this->fillTimer($machine->label, '13:00', '14:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+        }
+
+        echo "Timers are filled. \n";
+
     
     }
 
-    public function fillTimer($machine, $start, $finish, $tick_time_minutes, $shift)
+    public function fillTimer($machine, $start, $finish, $do_per_minute_pcs, $do_per_minute_cbm, $tick_time_minutes, $shift)
     {
         $start = new Carbon($start);
-        $break_1 = new Carbon($finish);
-        $cycles = ($break_1->diffInMinutes($start))/$tick_time_minutes;
-        
+        $finish = new Carbon($finish);
+        $cycles = ($finish->diffInMinutes($start))/$tick_time_minutes;
+        $to_do_pcs = $tick_time_minutes * $do_per_minute_pcs;
+        $to_do_cbm = $tick_time_minutes * $do_per_minute_cbm;
+        $total_pcs = 0;
+        $total_cbm = 0;
+
         switch ($machine) {
             case 'selco':
-
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;                    
                     $timer = TimerSelco::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
                             'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -82,11 +114,15 @@ class fillTimers extends Command
                 break;
             case 'akron':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerAkron::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
                             'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -95,11 +131,15 @@ class fillTimers extends Command
                 break;
             case 'biesse-b1':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerBiesseB1::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -108,11 +148,15 @@ class fillTimers extends Command
                 break;
             case 'biesse-fdt':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerBiesseFdt::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -121,11 +165,15 @@ class fillTimers extends Command
                 break;
             case 'biesse-sb':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerBiesseSb::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -134,11 +182,15 @@ class fillTimers extends Command
                 break;
             case 'dolnowrzecionowki':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerDolnowrzecionowki::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -147,11 +199,15 @@ class fillTimers extends Command
                 break;
             case 'frezarki':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerFrezarki::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -160,11 +216,15 @@ class fillTimers extends Command
                 break;
             case 'homag':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerHomag::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -173,11 +233,15 @@ class fillTimers extends Command
                 break;
             case 'kartony':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerKartony::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -186,11 +250,15 @@ class fillTimers extends Command
                 break;
             case 'montaz':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerMontaz::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -199,11 +267,15 @@ class fillTimers extends Command
                 break;
             case 'packing':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerPacking::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -212,11 +284,15 @@ class fillTimers extends Command
                 break;
             case 'press':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerPress::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -225,11 +301,15 @@ class fillTimers extends Command
                 break;
             case 'saw':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerSaw::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -238,11 +318,15 @@ class fillTimers extends Command
                 break;
             case 'skiper':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerSkiper::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -251,11 +335,15 @@ class fillTimers extends Command
                 break;
             case 'ukocia':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerUkocia::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -264,11 +352,15 @@ class fillTimers extends Command
                 break;
             case 'ukosiarki':
                 for ($i = 1; $i <= $cycles; $i++) {
+                    $total_pcs += $to_do_pcs;
+                    $total_cbm += $to_do_cbm;
                     $timer = TimerUkosiarki::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),
-                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                           'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
+                            'to_do_pcs' => $total_pcs,
+                            'to_do_cbm' => $total_cbm,
                             'done' => 0,
                             'shift' => $shift,
                         ]
@@ -276,9 +368,10 @@ class fillTimers extends Command
                 }
                 break;
             default:
+                    echo "Machine could not be found \n";
                 break;
         }
-        echo "Timer " . $machine . " filled with data until " . $finish;
+        echo "Timer " . $machine . " filled with data until " . $finish ."\n";
 
     }
 }

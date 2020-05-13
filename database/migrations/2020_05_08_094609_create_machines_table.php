@@ -17,12 +17,14 @@ class CreateMachinesTable extends Migration
             $table->id();
             $table->string('name', 50);
             $table->string('label', 50);
-            $table->double('norm1', 8, 2)->nullable();	
+            $table->double('max_norm1', 8, 2)->nullable();
+            $table->double('standard_norm1', 8, 2)->nullable();	
+            $table->double('min_norm1', 8, 2)->nullable();		
             $table->string('unit1', 10)->nullable();
-            $table->double('norm2', 8, 2)->nullable();
+            $table->double('max_norm2', 8, 2)->nullable();
+            $table->double('standard_norm2', 8, 2)->nullable();	
+            $table->double('min_norm2', 8, 2)->nullable();
             $table->string('unit2', 10)->nullable();
-            $table->double('norm3', 8, 2)->nullable();
-            $table->string('unit3', 10)->nullable();
             $table->double('working_hours', 8, 2)->nullable();
             $table->double('working_minutes', 8, 2)->nullable();
             $table->double('tick_minutes', 8, 2)->nullable();

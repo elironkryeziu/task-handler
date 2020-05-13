@@ -27,7 +27,8 @@ class CreateMachineTimersTable extends Migration
                 $table->time('start_time', 0)->nullable();
                 $table->char('number', 5)->nullable();
                 $table->time('tick_time', 0)->nullable();
-                $table->double('to_do', 8, 2)->nullable();
+                $table->double('to_do_pcs', 8, 2)->nullable();
+                $table->double('to_do_cbm', 8, 4)->nullable();
                 $table->double('done', 8, 2)->nullable();
                 $table->integer('shift')->nullable();
            

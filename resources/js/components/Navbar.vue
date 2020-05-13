@@ -8,9 +8,11 @@
         </div>
 
         <div class="sm:mb-0 self-center">
-            <a href="/login">
+                <router-link to="/login" tag="button" class="bg-blue-500 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Sign in</router-link> 
+            <!-- <a href="/login">
             <button class="bg-blue-500 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">Sign in</button>
-            </a>
+            </a> -->
         </div>
         </nav>
     </div>
