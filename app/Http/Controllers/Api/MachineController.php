@@ -13,7 +13,15 @@ class MachineController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($label, Request $request)
+    public function index()
+    {
+        $machines = Machine::all();
+
+        return $machines;
+    }
+
+
+    public function show($label, Request $request)
     {
             $machine = Machine::where('label',$label)->first();
             if(!$machine)
@@ -33,6 +41,12 @@ class MachineController extends Controller
                 ];
             }
     }
+
+    public function getMachines()
+    {
+
+    }
+
     
     
 }

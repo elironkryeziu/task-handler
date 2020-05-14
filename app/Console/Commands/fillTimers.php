@@ -76,7 +76,7 @@ class fillTimers extends Command
             $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
             $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
 
-            $this->fillTimer($machine->label, '13:00', '14:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+            $this->fillTimer($machine->label, '15:00', '17:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
         }
 
         echo "Timers are filled. \n";
@@ -333,7 +333,7 @@ class fillTimers extends Command
                     );
                 }
                 break;
-            case 'ukocia':
+            case 'okucia':
                 for ($i = 1; $i <= $cycles; $i++) {
                     $total_pcs += $to_do_pcs;
                     $total_cbm += $to_do_cbm;

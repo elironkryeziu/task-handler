@@ -107,7 +107,7 @@ class TimerController extends Controller
                             ->orderBy('id', 'desc')
                             ->get(['start_time','tick_time','to_do_pcs','to_do_cbm','done','shift']);
             break;
-            case 'ukocia':
+            case 'ukucia':
                 $timer = TimerUkocia::whereDate('created_at', '=', $today)
                             ->orderBy('id', 'desc')
                             ->get(['start_time','tick_time','to_do_pcs','to_do_cbm','done','shift']);

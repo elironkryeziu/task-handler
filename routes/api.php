@@ -14,9 +14,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    Route::post('/logout', 'AuthController@logout');
+
+    Route::get('/machines', 'Api\MachineController@index');
+    Route::get('/departments', 'Api\DepartmentController@index');
+
+
 });
 
-Route::get('/{label}', 'Api\MachineController@index');
+Route::post('/login', 'AuthController@login');
+Route::post('/register', 'AuthController@register');
+
+Route::get('/{label}', 'Api\MachineController@show');
 Route::get('/timer/{label}', 'Api\TimerController@index');

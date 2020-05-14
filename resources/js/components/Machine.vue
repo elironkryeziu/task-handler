@@ -151,10 +151,10 @@ export default {
 .toggle-checkbox:checked {
   background-color: right-0 border-green-400;
   right: 0;
-  border-color: #68D391;
+  border-color: #4299e1;
 }
 .toggle-checkbox:checked + .toggle-label {
-  background-color: bg-green-400;
-  background-color: #68D391;
+  background-color: bg-blue-500;
+  background-color: #4299e1;
 }
 </style>

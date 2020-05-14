@@ -1,18 +1,28 @@
 <template>
   <div>
-        <nav class="font-sans flex flex-col text-center content-center sm:flex-row sm:text-left sm:justify-between py-2 px-6 bg-white shadow sm:items-baseline w-full">
-        <div class="mb-2 sm:mb-0 inner">
-        <!-- <a href="/" class="text-2xl no-underline text-grey-darkest hover:text-blue-dark font-sans font-bold">Timer!</a><br> -->
-        <router-link to="/" class="text-2xl no-underline text-grey-darkest hover:text-blue-dark font-sans font-bold">
-                Timer! </router-link> 
+    <nav class="font-sans relative select-none shadow-md bg-blue-500 lg:flex lg:items-stretch w-full">
+        <div class="flex flex-no-shrink items-stretch h-12">
+            <router-link to="/" class="text-2xl no-underline text-white px-6 py-2 font-sans font-bold">Timer!</router-link>
+            <button class="block lg:hidden cursor-pointer ml-auto relative w-12 h-12 p-4">
+            <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+            <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/></svg>
+            </button>
         </div>
-
-        <div class="sm:mb-0 self-center">
-                <router-link to="/login" tag="button" class="bg-blue-500 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
-                Sign in</router-link> 
-            <!-- <a href="/login">
-            <button class="bg-blue-500 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">Sign in</button>
-            </a> -->
+        <div class="lg:flex lg:items-stretch lg:flex-no-shrink lg:flex-grow">
+            <div v-if="isLoggedIn" class="lg:flex lg:items-stretch lg:justify-end ml-auto">
+                <router-link to="/admin/machines" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Machines</router-link>
+                <router-link to="/admin/departments" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Departments</router-link>
+                <button @click="logout" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Sign out</button>
+            <!-- <a href="#" class="flex-no-grow flex-no-shrink relative py-2 px-6 leading-normal text-white no-underline flex items-center hover:bg-blue-300">Item 1</a> -->
+            </div>
+            <div v-else class="lg:flex lg:items-stretch lg:justify-end ml-auto">
+                <router-link to="/login" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Sign in</router-link>
+            <!-- <a href="#" class="flex-no-grow flex-no-shrink relative py-2 px-6 leading-normal text-white no-underline flex items-center hover:bg-blue-300">Item 1</a> -->
+            </div>
         </div>
         </nav>
     </div>
@@ -20,6 +30,37 @@
 
 <script>
 export default {
+    data() {
+        return {
+            isLoggedIn: false,
+        }
+    },
+    created() {
+        this.checkLoggedIn()
+    },
+    methods : {
+        checkLoggedIn() {
+            if(localStorage.getItem("access_token"))
+            {
+                this.isLoggedIn = true;
+            }else{
+                this.isLoggedIn = false;
+            }
+        },
+        logout() {
+             axios.defaults.headers.common["Authorization"] =
+            "Bearer " + localStorage.getItem("access_token");
+            axios
+            .post(`api/logout`)
+            .then(response => {
+                localStorage.removeItem("access_token");
+                this.$router.push('/');
+            })
+            .catch(error => {
+            console.log(error);
+            });
+        }
+    }
 
 }
 </script>
