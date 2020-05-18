@@ -6,8 +6,10 @@
     </div>
     <div v-else class="flex flex-col px-6 py-6">
     <h1 class="text-3xl mb-10">Departments</h1>
+    <div class="py-6">
+    <router-link to="/" class="cursor-pointer bg-blue-500 hover:bg-blue-300 px-6 py-2 text-blue-100 hover:text-white rounded">Add</router-link>
+    </div>
   <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-    <router-link to="/" class="cursor-pointer bg-blue-500 hover:bg-blue-300 shadow-xl px-6 py-2 text-blue-100 hover:text-white rounded">Add</router-link>
     <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
       <table class="min-w-full">
         <thead>
@@ -80,7 +82,7 @@
             
             
             <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-              <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+              <a href="#" class="text-blue-500 hover:text-blue-900">Edit</a>
             </td>
           </tr>
         </tbody>

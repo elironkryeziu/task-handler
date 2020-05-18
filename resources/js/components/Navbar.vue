@@ -10,12 +10,17 @@
         </div>
         <div class="lg:flex lg:items-stretch lg:flex-no-shrink lg:flex-grow">
             <div v-if="isLoggedIn" class="lg:flex lg:items-stretch lg:justify-end ml-auto">
+                <router-link to="/admin/timers" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Timers</router-link>
                 <router-link to="/admin/machines" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
                 Machines</router-link>
                 <router-link to="/admin/departments" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
                 Departments</router-link>
-                <button @click="logout" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
-                Sign out</button>
+                <!-- <button @click="logout" class="bg-blue-500 px-6 py-3 inline hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Sign out</button> -->
+                <router-link to="/logout" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
+                Signout</router-link>
+         
             <!-- <a href="#" class="flex-no-grow flex-no-shrink relative py-2 px-6 leading-normal text-white no-underline flex items-center hover:bg-blue-300">Item 1</a> -->
             </div>
             <div v-else class="lg:flex lg:items-stretch lg:justify-end ml-auto">
@@ -47,19 +52,6 @@ export default {
                 this.isLoggedIn = false;
             }
         },
-        logout() {
-             axios.defaults.headers.common["Authorization"] =
-            "Bearer " + localStorage.getItem("access_token");
-            axios
-            .post(`api/logout`)
-            .then(response => {
-                localStorage.removeItem("access_token");
-                this.$router.push('/');
-            })
-            .catch(error => {
-            console.log(error);
-            });
-        }
     }
 
 }

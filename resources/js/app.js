@@ -1,12 +1,10 @@
 import Vue from 'vue';
 import router from './router';
 import App from './components/App.vue';
+import VModal from 'vue-js-modal'
 
 require('./bootstrap');
 
-// window.Vue = require('vue');
-
-// Vue.component('app',require('./components/App.vue').default);
 router.beforeEach((to, from, next) => {
     if (to.matched.some((record) => record.meta.requiresAuth)) {
       // this route requires auth, check if logged in
@@ -41,3 +39,5 @@ const app = new Vue({
         App
     },
 });
+
+Vue.use(VModal)

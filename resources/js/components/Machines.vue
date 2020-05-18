@@ -5,9 +5,12 @@
           <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1>
     </div>
     <div v-else class="flex flex-col px-6 py-6">
+      <AddorEditMachine/>
     <h1 class="text-3xl mb-10">Machines</h1>
+    <div class="py-6">
+    <button @click="showAddModal" class="cursor-pointer bg-blue-500 hover:bg-blue-300 px-6 py-2 text-white hover:text-white rounded">Add</button>
+    </div>
   <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-    <router-link to="/" class="cursor-pointer bg-blue-500 hover:bg-blue-300 shadow-xl px-6 py-2 text-blue-100 hover:text-white rounded">Add</router-link>
     <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
       <table class="min-w-full">
         <thead>
@@ -34,14 +37,14 @@
               Minimum Norm (CBM)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Working hours
+              Working hours (minutes)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Working minutes
+              Tick minutes
             </th>
-            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <!-- <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               No. workers
-            </th>
+            </th> -->
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
           </tr>
         </thead>
@@ -69,16 +72,16 @@
               {{machine.min_norm2}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{machine.working_hours}}
+              {{machine.working_hours}} ({{machine.working_minutes}})
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{machine.working_minutes}}
+              {{machine.tick_minutes}}
             </td>
-            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
+            <!-- <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
               {{machine.workers_number}}
-            </td>
+            </td> -->
             <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-              <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+              <button @click="showMachineModal(machine)" class="text-blue-500 font-bold hover:text-blue-900">Edit</button>
             </td>
           </tr>
         </tbody>
@@ -86,17 +89,15 @@
     </div>
   </div>
 </div>
-        
-
-
-
 </div>
 </template>
 
 <script>
 import Navbar from './Navbar';
+import AddorEditMachine from './AddorEditMachine';
 export default {components : {
-            Navbar
+            Navbar,
+            AddorEditMachine
         },
      data() {
         return {
@@ -108,6 +109,25 @@ export default {components : {
         this.getMachines()
         },
     methods: {
+        showAddModal () {
+        this.$modal.show('add-machine', { machine: null });
+        },
+        showMachineModal ($machine) {
+        this.$modal.show('add-machine', { machine: $machine });
+        },
+        hide () {
+          this.$modal.hide('add-machine');
+        },
+        beforeOpen (event) {
+          
+          // console.log(event.params.machine);
+        if(event.params.machine !== null)
+        {
+          this.inputs.input_name = event.params.machine.name
+          console.log("tung");
+          // max_norm_cbm = machine.max_norm2
+        }
+        },
         getMachines() {
             this.loading = true
             axios.defaults.headers.common["Authorization"] =

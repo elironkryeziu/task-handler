@@ -8,6 +8,8 @@ import Register from './components/Register';
 import AdminPanel from './components/AdminPanel';
 import Departments from './components/Departments';
 import Machines from './components/Machines';
+import Timers from './components/Timers';
+import Logout from './components/Logout'
 
 Vue.use(VueRouter);
 
@@ -23,6 +25,12 @@ export default new VueRouter({
             requiresAuth: true,
         }},
         { path: '/admin/machines', component: Machines, meta: {
+            requiresAuth: true,
+        }},
+        { path: '/admin/timers', component: Timers, meta: {
+            requiresAuth: true,
+        }},
+        { path: '/logout', component: Logout, meta: {
             requiresAuth: true,
         }},
         { path: '/error', component: NotFound },
