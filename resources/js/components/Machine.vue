@@ -7,7 +7,7 @@
     <div v-else>
         <h1 class="text-center text-4xl text-black font-medium leading-snug tracking-wider py-6">{{machine.name}}</h1>
         <div v-if="!started" class="mx-auto text-center py-6 px-6">
-        <button type="submit" class="cursor-pointer bg-green-600 hover:bg-green-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">Start job</button>
+        <button @click="start" class="cursor-pointer bg-green-600 hover:bg-green-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">Start job</button>
         </div>
         <div v-else>
         <div class="px-6 py-2">
@@ -42,11 +42,11 @@
             </tr>
             <tr>
             <td class="relative relative -mb-px border p-4 border-grey">Start time:</td>
-            <td class="relative relative -mb-px border p-4 border-grey font-semibold"> 08:00</td>
+            <td class="relative relative -mb-px border p-4 border-grey font-semibold"> 08:00 AM</td>
             </tr>
             <tr>
             <td class="rounded-b relative -mb-px border p-4 border-grey">To do per minute:</td>
-            <td class="rounded-b relative -mb-px border p-4 border-grey font-semibold">{{ machine.todo_minute_pcs }}</td>
+            <td class="rounded-b relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? machine.todo_minute_cbm : machine.todo_minute_pcs }}</td>
             </tr>
         </tbody>
         </table>
@@ -61,7 +61,7 @@
         </thead>
         <tbody>
         <tr>
-        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ currentTimer.tick_time }}</td>
+        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ currentTimer.tick_time | timeformat }}</td>
         <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? currentTimer.to_do_cbm : currentTimer.to_do_pcs }}</td>
         <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">0</td>
         </tr>
@@ -84,9 +84,9 @@
         <tbody>
         <tr v-for="timer in previousTimers" :key="timer.id">
         <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">Tick time</td>
-        <td class="rounded-t relative -mb-px border p-4 border-grey">{{timer.start_time}}</td>
+        <td class="rounded-t relative -mb-px border p-4 border-grey">{{timer.start_time | timeformat}}</td>
         <td class="rounded-t relative -mb-px border p-4 border-grey">{{isCbm ? timer.to_do_cbm : timer.to_do_pcs}}</td>
-        <td class="rounded-t relative -mb-px border p-4 border-grey">{{timer.tick_time}}</td>
+        <td class="rounded-t relative -mb-px border p-4 border-grey">{{timer.tick_time | timeformat}}</td>
         <td class="rounded-t relative -mb-px border p-4 border-grey">0</td>
         </tr>
         </tbody>
@@ -100,12 +100,15 @@
 <script>
 import Navbar from './Navbar';
 import axios from 'axios';
+import moment from 'moment'
+
 export default {
     components : {
             Navbar
         },
     data() {
         return {
+            timeout: null,
             started: null,
             loading: false,
             isCbm : false,
@@ -122,7 +125,7 @@ export default {
         this.getTimers()
     },
     methods : {
-        getMachine()
+        getMachine ()
         {
             this.loading = true
             axios.get('/api/' + this.label)
@@ -134,18 +137,41 @@ export default {
             }
             }).finally(() => (this.loading = false)) 
         },
-        getTimers()
+        getTimers ()
         {
             axios.get('/api/timer/' + this.label)
             .then(response=>{
-               this.previousTimers = response.data.previous_timers;
-               this.currentTimer = response.data.current_timer;
-               this.started = response.data.started;
+                this.previousTimers = response.data.previous_timers;
+                this.currentTimer = response.data.current_timer;
+                this.started = response.data.started;
+                this.timeout = moment(this.currentTimer.tick_time, "HH:mm:ss").diff(moment());
+                this.getNextTimer(this.timeout);
+                // if(this.currentTimer != 0)
+                // {
+                // }
             }).catch((error) => {
-            if (error.response.status === 404) {
-               this.$router.push({ path: '/error' })
-            }
+                if (error.response.status === 404) {
+                this.$router.push({ path: '/error' })
+                }
             }) 
+        },
+        getNextTimer ($timeout) 
+        {
+           setTimeout(() => {this.getTimers()}, $timeout + 60100);
+        },
+        start() 
+        {
+             this.loading = true
+            axios.defaults.headers.common["Authorization"] =
+            "Bearer " + localStorage.getItem("access_token");
+             axios
+                .post('/api/timers/fill/' + this.label)
+                .then(response => {
+                window.location.reload()
+                })
+                .catch(error => {
+                console.log(error);
+                }).finally(() => (this.loading = false)) 
         }
     }
 }

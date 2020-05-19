@@ -68,13 +68,12 @@ class fillTimers extends Command
         //         echo "Table ".$table." truncated \n";
         //     }
             
-            
             $machine = Machine::where('label', $this->argument('label'))->first();
             if($machine){
                 $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
                 $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
     
-                $this->fillTimer($machine->label, '10:00', '12:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+                $this->fillTimer($machine->label, '13:00', '17:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
     
                 echo "Timers for machine " . $machine->name ." are filled. \n";
             }else

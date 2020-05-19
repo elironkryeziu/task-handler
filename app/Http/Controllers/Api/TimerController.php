@@ -18,9 +18,10 @@ use App\TimerBiesseSb;
 use App\TimerFrezarki;
 use App\TimerBiesseFdt;
 use App\TimerUkosiarki;
+use Illuminate\Http\Request;
 use App\TimerDolnowrzecionowki;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class TimerController extends Controller
 {
@@ -145,5 +146,10 @@ class TimerController extends Controller
             'current_timer' => $currentTimer,
             'started' => $started
         ];
+    }
+
+    public function fillTimer($label)
+    {
+        Artisan::call('timers:fill '.$label);
     }
 }

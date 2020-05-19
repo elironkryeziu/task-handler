@@ -5,9 +5,10 @@
           <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1>
     </div>
     <div v-else class="flex flex-col px-6 py-6">
+      <AddorEditDepartment/>
     <h1 class="text-3xl mb-10">Departments</h1>
     <div class="py-6">
-    <router-link to="/" class="cursor-pointer bg-blue-500 hover:bg-blue-300 px-6 py-2 text-blue-100 hover:text-white rounded">Add</router-link>
+    <button @click="showAddModal" class="cursor-pointer bg-blue-500 hover:bg-blue-300 px-6 py-2 text-white hover:text-white rounded">Add</button>
     </div>
   <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
     <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
@@ -82,7 +83,9 @@
             
             
             <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-              <a href="#" class="text-blue-500 hover:text-blue-900">Edit</a>
+              <!-- <a href="#" class="text-blue-500 hover:text-blue-900">Edit</a> -->
+              <button @click="showDepartmentModal(department)" class="text-blue-500 font-bold hover:text-blue-900">Edit</button>
+
             </td>
           </tr>
         </tbody>
@@ -100,9 +103,11 @@
 
 <script>
 import Navbar from './Navbar';
+import AddorEditDepartment from './AddorEditDepartment';
 export default {
     components : {
-            Navbar
+            Navbar,
+            AddorEditDepartment
         },
      data() {
         return {
@@ -114,6 +119,15 @@ export default {
         this.getDepartments()
         },
     methods: {
+        showAddModal () {
+          this.$modal.show('add-department', { department: null });
+        },
+        showDepartmentModal ($department) {
+          this.$modal.show('add-department', { department: $department });
+        },
+        hide () {
+          this.$modal.hide('add-department');
+        },
         getDepartments() {
             this.loading = true
             axios.defaults.headers.common["Authorization"] =
@@ -125,12 +139,10 @@ export default {
             if (error.response.status === 404) {
                this.$router.push({ path: '/error' })
             }
-            }).finally(() => (this.loading = false)) 
+            }).finally(() => (this.loading = false));
+ 
         }
-
     }
-    
-
 }
 </script>
 

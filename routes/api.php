@@ -32,10 +32,14 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::put('/department/{id}', 'Api\DepartmentController@update');
     Route::delete('/department/{id}', 'Api\DepartmentController@destroy');
 
+    
 });
 
 Route::post('/login', 'AuthController@login');
 Route::post('/register', 'AuthController@register');
 
 Route::get('/{label}', 'Api\MachineController@show');
+
+//timers
 Route::get('/timer/{label}', 'Api\TimerController@index');
+Route::post('/timers/fill/{label}', 'Api\TimerController@fillTimer');

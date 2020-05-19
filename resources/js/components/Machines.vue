@@ -131,10 +131,7 @@ export default {components : {
             }
             }).finally(() => (this.loading = false)) 
         }
-
     }
-    
-
 }
 </script>
 

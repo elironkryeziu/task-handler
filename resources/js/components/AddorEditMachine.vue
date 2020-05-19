@@ -1,5 +1,5 @@
 <template>
-   <modal  name="add-machine"
+   <modal name="add-machine"
             :width="800"
             :height="700"
             @before-open="beforeOpen">
@@ -136,22 +136,6 @@ export default {
 
         },
         editRecord () {
-            // console.log({
-            //     name : this.inputs.input_name,
-            // });
-            // console.log({
-            //     name : this.inputs.input_name,
-            //     max_norm1 : this.inputs.input_max_norm1,
-            //     standard_norm1 : this.inputs.input_stand_norm1,
-            //     min_norm1 : this.inputs.input_min_norm1,
-            //     max_norm2 : this.inputs.input_max_norm2,
-            //     standard_norm2 : this.inputs.input_stand_norm2,
-            //     min_norm2 : this.inputs.input_min_norm2,
-            //     working_hours : this.inputs.input_whours,
-            //     break_minutes : this.inputs.input_break_min,
-            //     tick_minutes : this.inputs.input_tick_min
-            // });
-
             axios.defaults.headers.common["Authorization"] =
             "Bearer " + localStorage.getItem("access_token");
             axios
@@ -175,6 +159,7 @@ export default {
             .catch(error => console.log(error));
         },
         deleteRecord () {
+            
         }
 
     }
