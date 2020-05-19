@@ -118,16 +118,6 @@ export default {components : {
         hide () {
           this.$modal.hide('add-machine');
         },
-        beforeOpen (event) {
-          
-          // console.log(event.params.machine);
-        if(event.params.machine !== null)
-        {
-          this.inputs.input_name = event.params.machine.name
-          console.log("tung");
-          // max_norm_cbm = machine.max_norm2
-        }
-        },
         getMachines() {
             this.loading = true
             axios.defaults.headers.common["Authorization"] =

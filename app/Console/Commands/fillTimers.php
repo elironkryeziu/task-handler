@@ -30,7 +30,7 @@ class fillTimers extends Command
      *
      * @var string
      */
-    protected $signature = 'timers:fill';
+    protected $signature = 'timers:fill {label?}';
 
     /**
      * The console command description.
@@ -55,31 +55,33 @@ class fillTimers extends Command
      * @return mixed
      */
     public function handle()
-    {
+    { 
         // $machines = array("timer_selco", "timer_press", "timer_homag",
         // "timer_biesse_sb", "timer_biesse_b1", "timer_akron",
         // "timer_skiper", "timer_biesse_fdt", "timer_saw",
         // "timer_frezarki", "timer_dolnowrzecionowki", "timer_ukosiarki",
         // "timer_ukocia", "timer_packing", "timer_kartony", "timer_montaz");
-
+        
         // foreach($machines as $table)
         // {
-        //     DB::table($table)->truncate();
-        //     echo "Table ".$table." truncated \n";
-        // }
-
-
-        $machines = Machine::all();
+        //         DB::table($table)->truncate();
+        //         echo "Table ".$table." truncated \n";
+        //     }
+            
+            
+            $machine = Machine::where('label', $this->argument('label'))->first();
+            if($machine){
+                $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
+                $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
+    
+                $this->fillTimer($machine->label, '10:00', '12:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+    
+                echo "Timers for machine " . $machine->name ." are filled. \n";
+            }else
+            {
+                echo "Machine not found \n";
+            }
         
-        foreach ($machines as $machine)
-        {
-            $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
-            $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
-
-            $this->fillTimer($machine->label, '15:00', '17:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
-        }
-
-        echo "Timers are filled. \n";
 
     
     }

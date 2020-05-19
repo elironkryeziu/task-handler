@@ -34,6 +34,7 @@ class TimerController extends Controller
         $time = Carbon::now()->format('H:i');
         $previousTimers = array();
         $currentTimer = 0;
+        $started = false;
         
         $today = Carbon::today()->toDateString();
         switch ($label) {
@@ -134,9 +135,15 @@ class TimerController extends Controller
             }
         }
 
+        if(!empty($previousTimers) || $currentTimer != 0)
+        {
+            $started = true;
+        }
+
         return [
             'previous_timers' => $previousTimers,
-            'current_timer' => $currentTimer
+            'current_timer' => $currentTimer,
+            'started' => $started
         ];
     }
 }

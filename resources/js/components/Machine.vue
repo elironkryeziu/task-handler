@@ -6,6 +6,10 @@
     </div>
     <div v-else>
         <h1 class="text-center text-4xl text-black font-medium leading-snug tracking-wider py-6">{{machine.name}}</h1>
+        <div v-if="!started" class="mx-auto text-center py-6 px-6">
+        <button type="submit" class="cursor-pointer bg-green-600 hover:bg-green-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">Start job</button>
+        </div>
+        <div v-else>
         <div class="px-6 py-2">
             <label for="toggle" class="text-xs text-gray-700">PCS</label>
             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
@@ -87,7 +91,7 @@
         </tr>
         </tbody>
         </table>
-
+        </div>
         </div>
     </div> <!-- end else -->
   </div>
@@ -102,6 +106,7 @@ export default {
         },
     data() {
         return {
+            started: null,
             loading: false,
             isCbm : false,
             machine : {},
@@ -135,6 +140,7 @@ export default {
             .then(response=>{
                this.previousTimers = response.data.previous_timers;
                this.currentTimer = response.data.current_timer;
+               this.started = response.data.started;
             }).catch((error) => {
             if (error.response.status === 404) {
                this.$router.push({ path: '/error' })

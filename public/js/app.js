@@ -1994,16 +1994,17 @@ __webpack_require__.r(__webpack_exports__);
     return {
       isEdit: true,
       inputs: {
+        input_id: null,
         input_name: "",
-        input_max_norm1: "",
-        input_stand_norm1: "",
-        input_min_norm1: "",
-        input_max_norm2: "",
-        input_stand_norm2: "",
-        input_min_norm2: "",
-        input_whours: "",
-        input_wmin: "",
-        input_tick_min: ""
+        input_max_norm1: null,
+        input_stand_norm1: null,
+        input_min_norm1: null,
+        input_max_norm2: null,
+        input_stand_norm2: null,
+        input_min_norm2: null,
+        input_whours: null,
+        input_break_min: null,
+        input_tick_min: null
       }
     };
   },
@@ -2013,6 +2014,8 @@ __webpack_require__.r(__webpack_exports__);
       this.isEdit = false;
 
       if (event.params.machine !== null) {
+        this.isEdit = true;
+        this.inputs.input_id = event.params.machine.id;
         this.inputs.input_name = event.params.machine.name;
         this.inputs.input_max_norm1 = event.params.machine.max_norm1;
         this.inputs.input_stand_norm1 = event.params.machine.standard_norm1;
@@ -2021,23 +2024,58 @@ __webpack_require__.r(__webpack_exports__);
         this.inputs.input_stand_norm2 = event.params.machine.standard_norm2;
         this.inputs.input_min_norm2 = event.params.machine.min_norm2;
         this.inputs.input_whours = event.params.machine.working_hours;
-        this.inputs.input_wmin = event.params.machine.working_minutes;
+        this.inputs.input_break_min = event.params.machine.working_minutes;
         this.inputs.input_tick_min = event.params.machine.tick_minutes;
-        this.isEdit = true;
       }
     },
     clearInputs: function clearInputs() {
+      this.inputs.input_id = null;
       this.inputs.input_name = "";
-      this.inputs.input_max_norm1 = "";
-      this.inputs.input_stand_norm1 = "";
-      this.inputs.input_min_norm1 = "";
-      this.inputs.input_max_norm2 = "";
-      this.inputs.input_stand_norm2 = "";
-      this.inputs.input_min_norm2 = "";
-      this.inputs.input_whours = "";
-      this.inputs.input_wmin = "";
-      this.inputs.input_tick_min = "";
-    }
+      this.inputs.input_max_norm1 = null;
+      this.inputs.input_stand_norm1 = null;
+      this.inputs.input_min_norm1 = null;
+      this.inputs.input_max_norm2 = null;
+      this.inputs.input_stand_norm2 = null;
+      this.inputs.input_min_norm2 = null;
+      this.inputs.input_whours = null;
+      this.inputs.input_break_min = null;
+      this.inputs.input_tick_min = null;
+    },
+    addRecord: function addRecord() {},
+    editRecord: function editRecord() {
+      // console.log({
+      //     name : this.inputs.input_name,
+      // });
+      // console.log({
+      //     name : this.inputs.input_name,
+      //     max_norm1 : this.inputs.input_max_norm1,
+      //     standard_norm1 : this.inputs.input_stand_norm1,
+      //     min_norm1 : this.inputs.input_min_norm1,
+      //     max_norm2 : this.inputs.input_max_norm2,
+      //     standard_norm2 : this.inputs.input_stand_norm2,
+      //     min_norm2 : this.inputs.input_min_norm2,
+      //     working_hours : this.inputs.input_whours,
+      //     break_minutes : this.inputs.input_break_min,
+      //     tick_minutes : this.inputs.input_tick_min
+      // });
+      axios.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
+      axios.put("".concat("http://timer.homeface/api", "/machine/").concat(this.inputs.input_id), {
+        name: this.inputs.input_name,
+        max_norm1: this.inputs.input_max_norm1,
+        standard_norm1: this.inputs.input_stand_norm1,
+        min_norm1: this.inputs.input_min_norm1,
+        max_norm2: this.inputs.input_max_norm2,
+        standard_norm2: this.inputs.input_stand_norm2,
+        min_norm2: this.inputs.input_min_norm2,
+        working_hours: this.inputs.input_whours,
+        break_minutes: this.inputs.input_break_min,
+        tick_minutes: this.inputs.input_tick_min
+      }).then( // console.log("Updated")
+      this.$modal.hide('add-machine'), window.location.reload())["catch"](function (error) {
+        return console.log(error);
+      });
+    },
+    deleteRecord: function deleteRecord() {}
   }
 });
 
@@ -2578,6 +2616,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2586,6 +2628,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      started: null,
       loading: false,
       isCbm: false,
       machine: {},
@@ -2620,6 +2663,7 @@ __webpack_require__.r(__webpack_exports__);
       axios__WEBPACK_IMPORTED_MODULE_1___default.a.get('/api/timer/' + this.label).then(function (response) {
         _this2.previousTimers = response.data.previous_timers;
         _this2.currentTimer = response.data.current_timer;
+        _this2.started = response.data.started;
       })["catch"](function (error) {
         if (error.response.status === 404) {
           _this2.$router.push({
@@ -2767,13 +2811,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     hide: function hide() {
       this.$modal.hide('add-machine');
-    },
-    beforeOpen: function beforeOpen(event) {
-      // console.log(event.params.machine);
-      if (event.params.machine !== null) {
-        this.inputs.input_name = event.params.machine.name;
-        console.log("tung"); // max_norm_cbm = machine.max_norm2
-      }
     },
     getMachines: function getMachines() {
       var _this = this;
@@ -39453,7 +39490,7 @@ var render = function() {
                       "p-1 px-2 appearance-none outline-none w-full text-gray-800",
                     attrs: {
                       type: "number",
-                      placeholder: "Stamdard norm (PCS)"
+                      placeholder: "Standard norm (PCS)"
                     },
                     domProps: { value: _vm.inputs.input_stand_norm1 },
                     on: {
@@ -39602,7 +39639,7 @@ var render = function() {
                       "p-1 px-2 appearance-none outline-none w-full text-gray-800",
                     attrs: {
                       type: "number",
-                      placeholder: "Stamdard norm (CBM)"
+                      placeholder: "Standard norm (CBM)"
                     },
                     domProps: { value: _vm.inputs.input_stand_norm2 },
                     on: {
@@ -39743,20 +39780,24 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.inputs.input_wmin,
-                        expression: "inputs.input_wmin"
+                        value: _vm.inputs.input_break_min,
+                        expression: "inputs.input_break_min"
                       }
                     ],
                     staticClass:
                       "p-1 px-2 appearance-none outline-none w-full text-gray-800",
                     attrs: { type: "number", placeholder: "Break minutes" },
-                    domProps: { value: _vm.inputs.input_wmin },
+                    domProps: { value: _vm.inputs.input_break_min },
                     on: {
                       input: function($event) {
                         if ($event.target.composing) {
                           return
                         }
-                        _vm.$set(_vm.inputs, "input_wmin", $event.target.value)
+                        _vm.$set(
+                          _vm.inputs,
+                          "input_break_min",
+                          $event.target.value
+                        )
                       }
                     }
                   })
@@ -39826,7 +39867,8 @@ var render = function() {
                   "button",
                   {
                     staticClass:
-                      "cursor-pointer bg-blue-600 hover:bg-blue-500 shadow-xl px-5 py-2 inline-block text-blue-100 hover:text-white rounded"
+                      "cursor-pointer bg-blue-600 hover:bg-blue-500 shadow-xl px-5 py-2 inline-block text-blue-100 hover:text-white rounded",
+                    on: { click: _vm.editRecord }
                   },
                   [_vm._v("Edit")]
                 )
@@ -40568,302 +40610,322 @@ var render = function() {
               [_vm._v(_vm._s(_vm.machine.name))]
             ),
             _vm._v(" "),
-            _c("div", { staticClass: "px-6 py-2" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "text-xs text-gray-700",
-                  attrs: { for: "toggle" }
-                },
-                [_vm._v("PCS")]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
-                },
-                [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.isCbm,
-                        expression: "isCbm"
-                      }
-                    ],
-                    staticClass:
-                      "toggle-checkbox outline-none absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer",
-                    attrs: { type: "checkbox", name: "toggle", id: "toggle" },
-                    domProps: {
-                      checked: Array.isArray(_vm.isCbm)
-                        ? _vm._i(_vm.isCbm, null) > -1
-                        : _vm.isCbm
+            !_vm.started
+              ? _c("div", { staticClass: "mx-auto text-center py-6 px-6" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass:
+                        "cursor-pointer bg-green-600 hover:bg-green-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded",
+                      attrs: { type: "submit" }
                     },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.isCbm,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 && (_vm.isCbm = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.isCbm = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
+                    [_vm._v("Start job")]
+                  )
+                ])
+              : _c("div", [
+                  _c("div", { staticClass: "px-6 py-2" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "text-xs text-gray-700",
+                        attrs: { for: "toggle" }
+                      },
+                      [_vm._v("PCS")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass:
+                          "relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                      },
+                      [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.isCbm,
+                              expression: "isCbm"
+                            }
+                          ],
+                          staticClass:
+                            "toggle-checkbox outline-none absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer",
+                          attrs: {
+                            type: "checkbox",
+                            name: "toggle",
+                            id: "toggle"
+                          },
+                          domProps: {
+                            checked: Array.isArray(_vm.isCbm)
+                              ? _vm._i(_vm.isCbm, null) > -1
+                              : _vm.isCbm
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = _vm.isCbm,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 && (_vm.isCbm = $$a.concat([$$v]))
+                                } else {
+                                  $$i > -1 &&
+                                    (_vm.isCbm = $$a
+                                      .slice(0, $$i)
+                                      .concat($$a.slice($$i + 1)))
+                                }
+                              } else {
+                                _vm.isCbm = $$c
+                              }
+                            }
                           }
-                        } else {
-                          _vm.isCbm = $$c
-                        }
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("label", {
-                    staticClass:
-                      "toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer",
-                    attrs: { for: "toggle" }
-                  })
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "label",
-                {
-                  staticClass: "text-xs text-gray-700",
-                  attrs: { for: "toggle" }
-                },
-                [_vm._v("CBM")]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "flex px-6 " }, [
-              _c("table", [
-                _vm._m(0),
-                _vm._v(" "),
-                _c("tbody", [
-                  _c("tr", [
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey"
-                      },
-                      [_vm._v("Standard norm:")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-                      },
-                      [
-                        _vm._v(
-                          _vm._s(
-                            _vm.isCbm
-                              ? _vm.machine.standard_norm_cbm
-                              : _vm.machine.standard_norm_pcs
-                          )
-                        )
-                      ]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("tr", [
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey"
-                      },
-                      [_vm._v("Maximum norm:")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-                      },
-                      [
-                        _vm._v(
-                          _vm._s(
-                            _vm.isCbm
-                              ? _vm.machine.max_norm_cbm
-                              : _vm.machine.max_norm_pcs
-                          )
-                        )
-                      ]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("tr", [
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey"
-                      },
-                      [_vm._v("Minimum norm:")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-                      },
-                      [
-                        _vm._v(
-                          _vm._s(
-                            _vm.isCbm
-                              ? _vm.machine.min_norm_cbm
-                              : _vm.machine.min_norm_pcs
-                          )
-                        )
-                      ]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _vm._m(1),
-                  _vm._v(" "),
-                  _c("tr", [
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-b relative -mb-px border p-4 border-grey"
-                      },
-                      [_vm._v("To do per minute:")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-b relative -mb-px border p-4 border-grey font-semibold"
-                      },
-                      [_vm._v(_vm._s(_vm.machine.todo_minute_pcs))]
-                    )
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("table", { staticClass: "mx-auto text-2xl" }, [
-                _vm._m(2),
-                _vm._v(" "),
-                _c("tbody", [
-                  _c("tr", [
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-                      },
-                      [_vm._v(_vm._s(_vm.currentTimer.tick_time))]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-                      },
-                      [
-                        _vm._v(
-                          _vm._s(
-                            _vm.isCbm
-                              ? _vm.currentTimer.to_do_cbm
-                              : _vm.currentTimer.to_do_pcs
-                          )
-                        )
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "td",
-                      {
-                        staticClass:
-                          "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-                      },
-                      [_vm._v("0")]
-                    )
-                  ])
-                ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "flex px-6 py-6" }, [
-              _c("table", [
-                _vm._m(3),
-                _vm._v(" "),
-                _c(
-                  "tbody",
-                  _vm._l(_vm.previousTimers, function(timer) {
-                    return _c("tr", { key: timer.id }, [
-                      _c(
-                        "td",
-                        {
+                        }),
+                        _vm._v(" "),
+                        _c("label", {
                           staticClass:
-                            "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-                        },
-                        [_vm._v("Tick time")]
-                      ),
+                            "toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer",
+                          attrs: { for: "toggle" }
+                        })
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "label",
+                      {
+                        staticClass: "text-xs text-gray-700",
+                        attrs: { for: "toggle" }
+                      },
+                      [_vm._v("CBM")]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "flex px-6 " }, [
+                    _c("table", [
+                      _vm._m(0),
+                      _vm._v(" "),
+                      _c("tbody", [
+                        _c("tr", [
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey"
+                            },
+                            [_vm._v("Standard norm:")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.isCbm
+                                    ? _vm.machine.standard_norm_cbm
+                                    : _vm.machine.standard_norm_pcs
+                                )
+                              )
+                            ]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey"
+                            },
+                            [_vm._v("Maximum norm:")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.isCbm
+                                    ? _vm.machine.max_norm_cbm
+                                    : _vm.machine.max_norm_pcs
+                                )
+                              )
+                            ]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey"
+                            },
+                            [_vm._v("Minimum norm:")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.isCbm
+                                    ? _vm.machine.min_norm_cbm
+                                    : _vm.machine.min_norm_pcs
+                                )
+                              )
+                            ]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _vm._m(1),
+                        _vm._v(" "),
+                        _c("tr", [
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-b relative -mb-px border p-4 border-grey"
+                            },
+                            [_vm._v("To do per minute:")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-b relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [_vm._v(_vm._s(_vm.machine.todo_minute_pcs))]
+                          )
+                        ])
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("table", { staticClass: "mx-auto text-2xl" }, [
+                      _vm._m(2),
+                      _vm._v(" "),
+                      _c("tbody", [
+                        _c("tr", [
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [_vm._v(_vm._s(_vm.currentTimer.tick_time))]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.isCbm
+                                    ? _vm.currentTimer.to_do_cbm
+                                    : _vm.currentTimer.to_do_pcs
+                                )
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [_vm._v("0")]
+                          )
+                        ])
+                      ])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "flex px-6 py-6" }, [
+                    _c("table", [
+                      _vm._m(3),
                       _vm._v(" "),
                       _c(
-                        "td",
-                        {
-                          staticClass:
-                            "rounded-t relative -mb-px border p-4 border-grey"
-                        },
-                        [_vm._v(_vm._s(timer.start_time))]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "td",
-                        {
-                          staticClass:
-                            "rounded-t relative -mb-px border p-4 border-grey"
-                        },
-                        [
-                          _vm._v(
-                            _vm._s(
-                              _vm.isCbm ? timer.to_do_cbm : timer.to_do_pcs
+                        "tbody",
+                        _vm._l(_vm.previousTimers, function(timer) {
+                          return _c("tr", { key: timer.id }, [
+                            _c(
+                              "td",
+                              {
+                                staticClass:
+                                  "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                              },
+                              [_vm._v("Tick time")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "td",
+                              {
+                                staticClass:
+                                  "rounded-t relative -mb-px border p-4 border-grey"
+                              },
+                              [_vm._v(_vm._s(timer.start_time))]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "td",
+                              {
+                                staticClass:
+                                  "rounded-t relative -mb-px border p-4 border-grey"
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(
+                                    _vm.isCbm
+                                      ? timer.to_do_cbm
+                                      : timer.to_do_pcs
+                                  )
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "td",
+                              {
+                                staticClass:
+                                  "rounded-t relative -mb-px border p-4 border-grey"
+                              },
+                              [_vm._v(_vm._s(timer.tick_time))]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "td",
+                              {
+                                staticClass:
+                                  "rounded-t relative -mb-px border p-4 border-grey"
+                              },
+                              [_vm._v("0")]
                             )
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "td",
-                        {
-                          staticClass:
-                            "rounded-t relative -mb-px border p-4 border-grey"
-                        },
-                        [_vm._v(_vm._s(timer.tick_time))]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "td",
-                        {
-                          staticClass:
-                            "rounded-t relative -mb-px border p-4 border-grey"
-                        },
-                        [_vm._v("0")]
+                          ])
+                        }),
+                        0
                       )
                     ])
-                  }),
-                  0
-                )
-              ])
-            ])
+                  ])
+                ])
           ])
     ],
     1
