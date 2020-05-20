@@ -53,7 +53,7 @@
                         <input type="number" v-model="inputs.input_whours" placeholder="Working hours" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Break minutes</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Working minutes</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number" v-model="inputs.input_break_min" placeholder="Break minutes" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>

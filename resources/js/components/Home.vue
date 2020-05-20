@@ -24,24 +24,41 @@ import Navbar from './Navbar';
         },
         data() {
             return {
-                machines : [
-                    {name : "SELCO",label : "selco" },
-                    {name : "PRESS",label : "press" },
-                    {name : "BIESSE SB",label : "biesse-sb" },
-                    {name : "BIESSE B1",label : "biesse-b1" },
-                    {name : "AKRON",label : "akron" },
-                    {name : "SKIPER",label : "skiper" },
-                    {name : "BIESSE FDT",label : "biesse-fdt" },
-                    {name : "SAW",label : "saw" },
-                    {name : "FREZARKI",label : "frezarki" },
-                    {name : "DOLNOWRZECIONÓWKI",label : "dolnowrzecionowki" },
-                    {name : "UKOSIARKI",label : "ukosiarki" },
-                    {name : "OKUCIA",label : "okucia" },
-                    {name : "PACKING",label : "packing" },
-                    {name : "KARTONY",label : "kartony" },
-                    {name : "MONTAŻ",label : "montaz" },
-                ]
+                machines: {},
+                // machines : [
+                //     {name : "SELCO",label : "selco" },
+                //     {name : "PRESS",label : "press" },
+                //     {name : "BIESSE SB",label : "biesse-sb" },
+                //     {name : "BIESSE B1",label : "biesse-b1" },
+                //     {name : "AKRON",label : "akron" },
+                //     {name : "SKIPER",label : "skiper" },
+                //     {name : "BIESSE FDT",label : "biesse-fdt" },
+                //     {name : "SAW",label : "saw" },
+                //     {name : "FREZARKI",label : "frezarki" },
+                //     {name : "DOLNOWRZECIONÓWKI",label : "dolnowrzecionowki" },
+                //     {name : "UKOSIARKI",label : "ukosiarki" },
+                //     {name : "OKUCIA",label : "okucia" },
+                //     {name : "PACKING",label : "packing" },
+                //     {name : "KARTONY",label : "kartony" },
+                //     {name : "MONTAŻ",label : "montaz" },
+                // ]
             }
+        },
+        created () {
+            this.getMachines()
+        },
+        methods: {
+            getMachines() {
+                axios.get('/api/machines')
+                .then(response=>{
+                this.machines = response.data;
+                }).catch((error) => {
+                if (error.response.status === 404) {
+                this.$router.push({ path: '/error' })
+                }
+                })
+            }
+
         }
     }
 </script>

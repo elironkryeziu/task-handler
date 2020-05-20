@@ -10,7 +10,7 @@ use App\TimerPress;
 use App\TimerSelco;
 use App\TimerMontaz;
 use App\TimerSkiper;
-use App\TimerUkocia;
+use App\TimerOkucia;
 use App\TimerKartony;
 use App\TimerPacking;
 use App\TimerBiesseB1;
@@ -37,7 +37,12 @@ class TimerController extends Controller
         $currentTimer = 0;
         $started = false;
         
-        $today = Carbon::today()->toDateString();
+        if($request->date)
+        {
+            $today = $request->date;
+        }else{
+            $today = Carbon::today()->toDateString();
+        }
         switch ($label) {
             case 'selco':
                 $timer = TimerSelco::whereDate('created_at', '=', $today)
@@ -109,8 +114,8 @@ class TimerController extends Controller
                             ->orderBy('id', 'desc')
                             ->get(['start_time','tick_time','to_do_pcs','to_do_cbm','done','shift']);
             break;
-            case 'ukucia':
-                $timer = TimerUkocia::whereDate('created_at', '=', $today)
+            case 'okucia':
+                $timer = TimerOkucia::whereDate('created_at', '=', $today)
                             ->orderBy('id', 'desc')
                             ->get(['start_time','tick_time','to_do_pcs','to_do_cbm','done','shift']);
             break;
@@ -124,28 +129,34 @@ class TimerController extends Controller
             break;
         }
 
-        foreach ($timer as $t)
+        if($request->date)
         {
-            if($t->tick_time < $time)
-            {
-                array_push($previousTimers , $t);
-            }
-            if($t->start_time < $time && $t->tick_time > $time)
-            {
-                $currentTimer = $t;
-            }
-        }
-
-        if(!empty($previousTimers) || $currentTimer != 0)
+            return $timer;
+        }else
         {
-            $started = true;
+            foreach ($timer as $t)
+            {
+                if($t->tick_time < $time)
+                {
+                    array_push($previousTimers , $t);
+                }
+                if($t->start_time < $time && $t->tick_time > $time)
+                {
+                    $currentTimer = $t;
+                }
+            }
+            
+            if(!empty($previousTimers) || $currentTimer != 0)
+            {
+                $started = true;
+            }
+            
+            return [
+                'previous_timers' => $previousTimers,
+                'current_timer' => $currentTimer,
+                'started' => $started
+            ];
         }
-
-        return [
-            'previous_timers' => $previousTimers,
-            'current_timer' => $currentTimer,
-            'started' => $started
-        ];
     }
 
     public function fillTimer($label)

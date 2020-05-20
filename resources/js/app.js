@@ -3,12 +3,24 @@ import router from './router';
 import App from './components/App.vue';
 import VModal from 'vue-js-modal'
 import moment from 'moment'
+import VCalendar from 'v-calendar';
+
 
 require('./bootstrap');
 
 
 Vue.filter('timeformat', (arg)=>{
-  return moment(arg, "HH:mm:ss").format('LT');
+  if(arg == null) 
+  {
+    return null;
+  }else
+  {
+    return moment(arg, "HH:mm:ss").format('LT');
+  }
+});
+
+Vue.use(VCalendar, {
+  componentPrefix: 'vc',  // Use <vc-calendar /> instead of <v-calendar />
 });
 
 router.beforeEach((to, from, next) => {
@@ -47,4 +59,3 @@ const app = new Vue({
 });
 
 Vue.use(VModal)
-Vue.use(require('vue-moment'));

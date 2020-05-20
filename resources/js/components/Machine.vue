@@ -145,10 +145,10 @@ export default {
                 this.currentTimer = response.data.current_timer;
                 this.started = response.data.started;
                 this.timeout = moment(this.currentTimer.tick_time, "HH:mm:ss").diff(moment());
+                if(this.timeout > 0)
+                {
                 this.getNextTimer(this.timeout);
-                // if(this.currentTimer != 0)
-                // {
-                // }
+                }
             }).catch((error) => {
                 if (error.response.status === 404) {
                 this.$router.push({ path: '/error' })

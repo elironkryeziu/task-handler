@@ -4,8 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TimerUkocia extends Model
+class TimerOkucia extends Model
 {
-    protected $table = 'timer_ukocia';
+    protected $table = 'timer_okucia';
     protected $guarded = [];
 }

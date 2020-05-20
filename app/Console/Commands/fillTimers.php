@@ -11,7 +11,7 @@ use App\TimerPress;
 use App\TimerSelco;
 use App\TimerMontaz;
 use App\TimerSkiper;
-use App\TimerUkocia;
+use App\TimerOkucia;
 use App\TimerKartony;
 use App\TimerPacking;
 use App\TimerBiesseB1;
@@ -60,7 +60,7 @@ class fillTimers extends Command
         // "timer_biesse_sb", "timer_biesse_b1", "timer_akron",
         // "timer_skiper", "timer_biesse_fdt", "timer_saw",
         // "timer_frezarki", "timer_dolnowrzecionowki", "timer_ukosiarki",
-        // "timer_ukocia", "timer_packing", "timer_kartony", "timer_montaz");
+        // "timer_okucia", "timer_packing", "timer_kartony", "timer_montaz");
         
         // foreach($machines as $table)
         // {
@@ -73,7 +73,7 @@ class fillTimers extends Command
                 $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
                 $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
     
-                $this->fillTimer($machine->label, '13:00', '17:30', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+                $this->fillTimer($machine->label, '15:00', '17:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
     
                 echo "Timers for machine " . $machine->name ." are filled. \n";
             }else
@@ -338,7 +338,7 @@ class fillTimers extends Command
                 for ($i = 1; $i <= $cycles; $i++) {
                     $total_pcs += $to_do_pcs;
                     $total_cbm += $to_do_cbm;
-                    $timer = TimerUkocia::updateOrCreate(
+                    $timer = TimerOkucia::updateOrCreate(
                         ['created_at' => Carbon::today()->toDateString(), 'start_time' => $start->format('H:i')],
                         [
                             'start_time' => $start->format('H:i'),

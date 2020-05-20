@@ -25,7 +25,7 @@
                 <router-link to="/" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
                 Home</router-link>
                 <router-link to="/login" class="bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider">
-                Sign in</router-link>
+                Login</router-link>
             </div>
         </div>
         </nav>

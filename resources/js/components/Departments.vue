@@ -57,28 +57,28 @@
               {{department.name}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{department.shift_1_start}}
+              {{department.shift_1_start | timeformat}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-             {{department.break_1_start}}
+             {{department.break_1_start | timeformat}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{department.break_1_end}}
+              {{department.break_1_end | timeformat}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{department.shift_1_end}}
+              {{department.shift_1_end | timeformat}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{department.shift_2_start}}
+              {{department.shift_2_start | timeformat}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-             {{department.break_2_start}}
+             {{department.break_2_start | timeformat}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{department.break_2_end}}
+              {{department.break_2_end | timeformat}}
             </td>
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
-              {{department.shift_2_end}}
+              {{department.shift_2_end | timeformat}}
             </td>
             
             
