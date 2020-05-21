@@ -73,7 +73,8 @@ class fillTimers extends Command
                 $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
                 $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
     
-                $this->fillTimer($machine->label, '15:00', '17:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+                $this->fillTimer($machine->label, '08:00', '11:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+                $this->fillTimer($machine->label, '12:00', '16:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 2);
     
                 echo "Timers for machine " . $machine->name ." are filled. \n";
             }else
@@ -107,7 +108,8 @@ class fillTimers extends Command
                             'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -124,7 +126,8 @@ class fillTimers extends Command
                             'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -141,7 +144,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -158,7 +162,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -175,7 +180,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -192,7 +198,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -209,7 +216,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -226,7 +234,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -243,7 +252,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -260,7 +270,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -277,7 +288,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -294,7 +306,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -311,7 +324,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -328,7 +342,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -345,7 +360,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );
@@ -362,7 +378,8 @@ class fillTimers extends Command
                            'tick_time' => $start->addMinutes($tick_time_minutes)->format('H:i'),
                             'to_do_pcs' => $total_pcs,
                             'to_do_cbm' => $total_cbm,
-                            'done' => 0,
+                            'done_pcs' => 0,
+                            'done_cbm' => 0,
                             'shift' => $shift,
                         ]
                     );

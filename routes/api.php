@@ -3,19 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-
 Route::group(['middleware' => 'auth:api'], function () {
+
     //auth
     Route::get('/user', 'AuthController@user');
     Route::post('/logout', 'AuthController@logout');
@@ -30,13 +19,17 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/department/create', 'Api\DepartmentController@store');
     Route::put('/department/{id}', 'Api\DepartmentController@update');
     Route::delete('/department/{id}', 'Api\DepartmentController@destroy');
-    
+
+    //update done from vendo in timers
+    Route::put('/timer/{label}/{id}', 'Api\TimerController@update');
     
 });
 
+//auth
 Route::post('/login', 'AuthController@login');
 Route::post('/register', 'AuthController@register');
 
+//machines
 Route::get('/machines', 'Api\MachineController@index');
 Route::get('/{label}', 'Api\MachineController@show');
 
