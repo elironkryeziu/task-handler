@@ -29,15 +29,15 @@
         </thead>
         <tbody>
             <tr>
-            <td class="rounded-t relative -mb-px border p-4 border-grey">Standard norm:</td>
+            <td class="rounded-t relative -mb-px border p-4 border-grey">Normal norm:</td>
             <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? machine.standard_norm_cbm : machine.standard_norm_pcs }}</td>
             </tr>
             <tr>
-            <td class="rounded-t relative -mb-px border p-4 border-grey">Maximum norm:</td>
+            <td class="rounded-t relative -mb-px border p-4 border-grey">Low norm:</td>
             <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? machine.max_norm_cbm : machine.max_norm_pcs }}</td>
             </tr>
             <tr>
-            <td class="rounded-t relative -mb-px border p-4 border-grey">Minimum norm:</td>
+            <td class="rounded-t relative -mb-px border p-4 border-grey">Lowest norm:</td>
             <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? machine.min_norm_cbm : machine.min_norm_pcs }}</td>
             </tr>
             <tr>
@@ -47,6 +47,10 @@
             <tr>
             <td class="rounded-b relative -mb-px border p-4 border-grey">To do per minute:</td>
             <td class="rounded-b relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? machine.todo_minute_cbm : machine.todo_minute_pcs }}</td>
+            </tr>
+            <tr>
+            <td class="rounded-t relative -mb-px border p-4 border-grey">No. of workers:</td>
+            <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ machine.workers_number }}</td>
             </tr>
         </tbody>
         </table>

@@ -4,6 +4,8 @@ import App from './components/App.vue';
 import VModal from 'vue-js-modal'
 import moment from 'moment'
 import VCalendar from 'v-calendar';
+import VueSession from 'vue-session'
+
 
 
 require('./bootstrap');
@@ -39,7 +41,7 @@ router.beforeEach((to, from, next) => {
       // if not, redirect to login page.
       if (localStorage.getItem("access_token")) {
         next({
-          path: "/admin",
+          path: "/",
         });
       } else {
         next();
@@ -59,3 +61,4 @@ const app = new Vue({
 });
 
 Vue.use(VModal)
+Vue.use(VueSession)

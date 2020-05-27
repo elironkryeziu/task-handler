@@ -95,7 +95,7 @@ class MachineSeeder extends Seeder
                 'created_at' => Carbon::now()
             ],
             [
-                'name' => 'SKIPER /1 worker 2 machins',
+                'name' => 'SKIPER',
                 'label' => 'skiper',
                 'max_norm1' => 1000,
                 'standard_norm1' => 800,
@@ -111,7 +111,7 @@ class MachineSeeder extends Seeder
                 'created_at' => Carbon::now()
             ],
             [
-                'name' => 'BIESSE FDT 1 operator 4 pomocnik',
+                'name' => 'BIESSE FDT',
                 'label' => 'biesse-fdt',
                 'max_norm1' => 1200,
                 'standard_norm1' => 1000,

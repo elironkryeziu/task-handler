@@ -14,34 +14,34 @@
        </div>
        <div class="flex flex-col md:flex-row">
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Maximum norm (PCS)</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Normal norm (PCS)</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number"  v-model="inputs.input_max_norm1" placeholder="Max norm (PCS)" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Standard norm (PCS)</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Low norm (PCS)</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number"  v-model="inputs.input_stand_norm1" placeholder="Standard norm (PCS)" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Minimum norm (PCS)</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Lowest norm (PCS)</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number" v-model="inputs.input_min_norm1" placeholder="Minimum norm (PCS)" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
             </div>
             <div class="flex flex-col md:flex-row">
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Maximum norm (CBM)</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Normal norm (CBM)</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number"  v-model="inputs.input_max_norm2" placeholder="Max norm (CBM)" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Standard norm (CBM)</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Low norm (CBM)</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number" v-model="inputs.input_stand_norm2" placeholder="Standard norm (CBM)" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Minimum norm (CBM)</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Lowest norm (CBM)</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number" v-model="inputs.input_min_norm2" placeholder="Minimum norm (CBM)" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
@@ -57,10 +57,18 @@
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number" v-model="inputs.input_break_min" placeholder="Break minutes" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
+               
+            </div>
+            <div class="flex flex-col md:flex-row">
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
                     <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Tick minutes</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number" v-model="inputs.input_tick_min" placeholder="Tick minutes" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
+                </div>
+                <div class="w-full mx-2 flex-1 svelte-1l8159u">
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> No. of workers</div>
+                    <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
+                        <input type="number" v-model="inputs.input_workers_number" placeholder="No. of workers" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
             </div>
      </div>
@@ -96,6 +104,7 @@ export default {
                 input_whours: null,
                 input_break_min: null,
                 input_tick_min: null,
+                input_workers_number: null,
             }
         }
     },
@@ -117,6 +126,7 @@ export default {
                 this.inputs.input_whours = event.params.machine.working_hours;
                 this.inputs.input_break_min = event.params.machine.working_minutes;
                 this.inputs.input_tick_min = event.params.machine.tick_minutes;
+                this.inputs.input_workers_number = event.params.machine.workers_number;
             }
         },
         clearInputs () {
@@ -131,6 +141,7 @@ export default {
             this.inputs.input_whours = null;
             this.inputs.input_break_min = null;
             this.inputs.input_tick_min = null;
+            this.input_workers_number = null;
         },
         addRecord () {
 
@@ -149,7 +160,8 @@ export default {
                 min_norm2 : this.inputs.input_min_norm2,
                 working_hours : this.inputs.input_whours,
                 break_minutes : this.inputs.input_break_min,
-                tick_minutes : this.inputs.input_tick_min
+                tick_minutes : this.inputs.input_tick_min,
+                workers_number : this.inputs.input_workers_number
             })
             .then(
                 // console.log("Updated")

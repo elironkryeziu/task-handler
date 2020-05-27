@@ -15,7 +15,9 @@ Vue.use(VueRouter);
 
 export default new VueRouter({
     routes: [
-        { path: '/', component: Home },
+        { path: '/', component: Home, meta: {
+            requiresAuth: true,
+        }},
         { path: '/login' , component: LogIn },
         { path: '/register', component: Register },
         { path: '/admin', component: AdminPanel, meta: {

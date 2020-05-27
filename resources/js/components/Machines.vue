@@ -19,22 +19,22 @@
               Name
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Maximum Norm (PCS)
+              Normal Norm (PCS)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Standard Norm (PCS)
+              Low Norm (PCS)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Minimum Norm (PCS)
+              Lowest Norm (PCS)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Maximum Norm (CBM)
+              Normal Norm (CBM)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Standard Norm (CBM)
+              Low Norm (CBM)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              Minimum Norm (CBM)
+              Lowest Norm (CBM)
             </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Working hours (minutes)
@@ -42,9 +42,9 @@
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
               Tick minutes
             </th>
-            <!-- <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              No. workers
-            </th> -->
+            <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              No. of workers
+            </th>
             <th class="px-6 py-3 border-b border-gray-200 bg-gray-50"></th>
           </tr>
         </thead>
@@ -77,9 +77,9 @@
             <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
               {{machine.tick_minutes}}
             </td>
-            <!-- <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
+            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900">
               {{machine.workers_number}}
-            </td> -->
+            </td>
             <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
               <button @click="showMachineModal(machine)" class="text-blue-500 font-bold hover:text-blue-900">Edit</button>
             </td>

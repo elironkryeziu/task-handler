@@ -81,9 +81,6 @@ class fillTimers extends Command
             {
                 echo "Machine not found \n";
             }
-        
-
-    
     }
 
     public function fillTimer($machine, $start, $finish, $do_per_minute_pcs, $do_per_minute_cbm, $tick_time_minutes, $shift)

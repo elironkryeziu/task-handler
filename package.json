@@ -26,8 +26,11 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "chart.js": "^2.9.3",
         "moment": "^2.25.3",
         "v-calendar": "^1.0.0-beta.23",
-        "vue-js-modal": "^2.0.0-rc.3"
+        "vue-chartjs": "^3.5.0",
+        "vue-js-modal": "^2.0.0-rc.3",
+        "vue-session": "^1.0.0"
     }
 }

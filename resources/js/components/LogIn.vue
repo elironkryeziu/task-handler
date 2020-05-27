@@ -70,7 +70,7 @@ export default {
                 .then(response => {
                 const token = response.data.access_token;
                 localStorage.setItem("access_token", token);
-                this.$router.push('/admin');
+                this.$router.push('/');
                 //   console.log(response.message);
                 })
                 .catch(error => {
