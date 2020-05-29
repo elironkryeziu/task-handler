@@ -32,17 +32,8 @@ class TimerController extends Controller
      */
     public function index($label, Request $request)
     {
-        $time = Carbon::now()->format('H:i');
-        $previousTimers = array();
-        $currentTimer = 0;
-        $started = false;
-        
-        if($request->date)
-        {
-            $today = $request->date;
-        }else{
-            $today = Carbon::today()->toDateString();
-        }
+        $today = Carbon::today()->toDateString();
+
         switch ($label) {
             case 'selco':
                 $timer = TimerSelco::whereDate('created_at', '=', $today)
@@ -129,39 +120,66 @@ class TimerController extends Controller
             break;
         }
 
-        if($request->date)
-        {
-            return $timer;
-        }else
-        {
-            foreach ($timer as $t)
-            {
-                if($t->tick_time < $time)
-                {
-                    array_push($previousTimers , $t);
-                }
-                if($t->start_time < $time && $t->tick_time > $time)
-                {
-                    $currentTimer = $t;
-                }
-            }
-            
-            if(!empty($previousTimers) || $currentTimer != 0)
-            {
-                $started = true;
-            }
-            
-            return [
-                'previous_timers' => $previousTimers,
-                'current_timer' => $currentTimer,
-                'started' => $started
-            ];
-        }
+        return [
+            "timers" => $timer
+        ];
     }
 
     public function fillTimer($label)
     {
-        Artisan::call('timers:fill '.$label);
+        // Artisan::call('timers:fill '.$label);
+        
+        $machine = Machine::where('label', $label)->first();
+        $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
+        $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
+        $tick_minutes = $machine->tick_minutes;
+        $start_time = Carbon::now()->format('H:i');
+        $tick_time = Carbon::now()->addMinutes($tick_minutes)->format('H:i');
+
+        switch ($label) {
+            case 'selco':
+                $timer = TimerSelco::create([
+                    "start_time" => $start_time,
+                    "tick_time" => $tick_time,
+                    "to_do_pcs" => $todo_minute_pcs*$tick_minutes,
+                    "to_do_cbm" => $todo_minute_cbm*$tick_minutes,
+                ]);
+            break;
+            case 'akron':
+            break;
+            case 'biesse-b1':
+            break;
+            case 'biesse-fdt':
+            break;
+            case 'biesse-sb':
+            break;
+            case 'dolnowrzecionowki':
+            break;
+            case 'frezarki':
+            break;
+            case 'homag':
+            break;
+            case 'kartony':
+            break;
+            case 'montaz':
+            break;
+            case 'packing':
+            break;
+            case 'press':
+            break;
+            case 'saw':
+            break;
+            case 'skiper':
+            break;
+            case 'okucia':
+            break;
+            case 'ukosiarki':
+            break;
+            default:
+                return abort(404, "The Machine was not found");
+            break;
+        }
+
     }
 
     /**

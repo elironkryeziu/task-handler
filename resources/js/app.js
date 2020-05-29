@@ -4,9 +4,7 @@ import App from './components/App.vue';
 import VModal from 'vue-js-modal'
 import moment from 'moment'
 import VCalendar from 'v-calendar';
-import VueSession from 'vue-session'
-
-
+import Notifications from 'vue-notification'
 
 require('./bootstrap');
 
@@ -21,14 +19,15 @@ Vue.filter('timeformat', (arg)=>{
   }
 });
 
+Vue.use(Notifications)
+//calendar in timer page
 Vue.use(VCalendar, {
   componentPrefix: 'vc',  // Use <vc-calendar /> instead of <v-calendar />
 });
 
+//ridirect to /login if not logged in
 router.beforeEach((to, from, next) => {
     if (to.matched.some((record) => record.meta.requiresAuth)) {
-      // this route requires auth, check if logged in
-      // if not, redirect to login page.
       if (!localStorage.getItem("access_token")) {
         next({
           path: "/login",
@@ -37,8 +36,6 @@ router.beforeEach((to, from, next) => {
         next();
       }
     } else if (to.matched.some((record) => record.meta.requiresVisitor)) {
-      // this route requires auth, check if logged in
-      // if not, redirect to login page.
       if (localStorage.getItem("access_token")) {
         next({
           path: "/",
@@ -61,4 +58,3 @@ const app = new Vue({
 });
 
 Vue.use(VModal)
-Vue.use(VueSession)

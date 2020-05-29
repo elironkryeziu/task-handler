@@ -68,19 +68,37 @@ class fillTimers extends Command
         //         echo "Table ".$table." truncated \n";
         //     }
             
-            $machine = Machine::where('label', $this->argument('label'))->first();
-            if($machine){
-                $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
-                $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
+            // $machine = Machine::where('label', $this->argument('label'))->first();
+            // if($machine){
+            //     $todo_minute_pcs = $machine->standard_norm1/$machine->working_minutes;
+            //     $todo_minute_cbm = $machine->standard_norm2/$machine->working_minutes;
     
-                $this->fillTimer($machine->label, '08:00', '11:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
-                $this->fillTimer($machine->label, '12:00', '16:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 2);
+            //     $this->fillTimer($machine->label, '08:00', '11:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 1);
+            //     $this->fillTimer($machine->label, '12:00', '16:00', $todo_minute_pcs, $todo_minute_cbm, $machine->tick_minutes, 2);
     
-                echo "Timers for machine " . $machine->name ." are filled. \n";
-            }else
-            {
-                echo "Machine not found \n";
-            }
+            //     echo "Timers for machine " . $machine->name ." are filled. \n";
+            // }else
+            // {
+            //     echo "Machine not found \n";
+            // }
+
+            //me i marr prej vendos
+            // $conn_string = "host=89.174.178.194 port=5432 dbname=hcelblag user=hcelb password=homvendo123";
+            // $dbconn = pg_connect($conn_string);
+
+            // $this->info('Connected!');
+            // $query = pg_query($dbconn, "select * from test");
+            // $this->info('Retrived.');
+
+            // $result = pg_fetch_all($query);
+            // foreach ($result as $rs) {
+            //     print_r($rs['date']);
+            // }
+            
+            $now = Carbon::now();
+            $tick_time = $now->addMinutes(10);
+            echo $tick_time->format('H:i');
+
     }
 
     public function fillTimer($machine, $start, $finish, $do_per_minute_pcs, $do_per_minute_cbm, $tick_time_minutes, $shift)

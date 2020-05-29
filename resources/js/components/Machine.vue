@@ -6,10 +6,21 @@
     </div>
     <div v-else>
         <h1 class="text-center text-4xl text-black font-medium leading-snug tracking-wider py-6">{{machine.name}}</h1>
-        <div v-if="!started" class="mx-auto text-center py-6 px-6">
+        <div v-if="!started && !paused" class="mx-auto text-center py-6 px-6">
         <button @click="start" class="cursor-pointer bg-green-600 hover:bg-green-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">Start job</button>
         </div>
+        <div  v-else-if="!started && paused" class="mx-auto text-center py-6 px-6">
+        <button @click="endpause" class="cursor-pointer bg-green-600 hover:bg-green-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">End Break time</button>
+        <button @click="end" class="cursor-pointer bg-red-600 hover:bg-red-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">End job</button>
+        <div class="py-10">
+            <BaseTimer/>
+        </div>
+        </div>
         <div v-else>
+        <div class="mx-auto text-center py-6 px-6">
+        <button @click="pause" class="cursor-pointer bg-gray-600 hover:bg-gray-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">Break time</button>
+            <button @click="end" class="cursor-pointer bg-red-600 hover:bg-red-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">End job</button>
+        </div>
         <div class="px-6 py-2">
             <label for="toggle" class="text-xs text-gray-700">PCS</label>
             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
@@ -65,8 +76,10 @@
         </thead>
         <tbody>
         <tr>
-        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ currentTimer.tick_time | timeformat }}</td>
-        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? currentTimer.to_do_cbm : currentTimer.to_do_pcs }}</td>
+        <!-- <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ currentTimer.tick_time | timeformat }}</td> -->
+        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">Tick time</td>
+        <!-- <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? currentTimer.to_do_cbm : currentTimer.to_do_pcs }}</td> -->
+        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">To do</td>
         <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">0</td>
         </tr>
         </tbody>
@@ -86,7 +99,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="timer in previousTimers" :key="timer.id">
+        <tr v-for="timer in timers" :key="timer.id">
         <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">Tick time</td>
         <td class="rounded-t relative -mb-px border p-4 border-grey">{{timer.start_time | timeformat}}</td>
         <td class="rounded-t relative -mb-px border p-4 border-grey">{{isCbm ? timer.to_do_cbm : timer.to_do_pcs}}</td>
@@ -103,22 +116,24 @@
 
 <script>
 import Navbar from './Navbar';
+import BaseTimer from "./BaseTimer";
 import axios from 'axios';
 import moment from 'moment'
 
 export default {
     components : {
-            Navbar
+            Navbar,
+            BaseTimer
         },
     data() {
         return {
             timeout: null,
-            started: null,
+            started: false,
+            paused: false,
             loading: false,
             isCbm : false,
             machine : {},
-            previousTimers : {},
-            currentTimer : {}
+            timers : {},
         }
     },
     props : [
@@ -126,7 +141,9 @@ export default {
     ],
     created() {
         this.getMachine(),
-        this.getTimers()
+        this.getTimers(),
+        this.started = false,
+        this.paused = false
     },
     methods : {
         getMachine ()
@@ -145,14 +162,12 @@ export default {
         {
             axios.get('/api/timer/' + this.label)
             .then(response=>{
-                this.previousTimers = response.data.previous_timers;
-                this.currentTimer = response.data.current_timer;
-                this.started = response.data.started;
-                this.timeout = moment(this.currentTimer.tick_time, "HH:mm:ss").diff(moment());
-                if(this.timeout > 0)
-                {
-                this.getNextTimer(this.timeout);
-                }
+                this.timers = response.data.timers;
+                // this.timeout = moment(this.currentTimer.tick_time, "HH:mm:ss").diff(moment());
+                // if(this.timeout > 0)
+                // {
+                // this.getNextTimer(this.timeout);
+                // }
             }).catch((error) => {
                 if (error.response.status === 404) {
                 this.$router.push({ path: '/error' })
@@ -165,17 +180,54 @@ export default {
         },
         start() 
         {
-             this.loading = true
-            axios.defaults.headers.common["Authorization"] =
-            "Bearer " + localStorage.getItem("access_token");
-             axios
-                .post('/api/timers/fill/' + this.label)
-                .then(response => {
-                window.location.reload()
-                })
-                .catch(error => {
-                console.log(error);
-                }).finally(() => (this.loading = false)) 
+            this.started = true;
+            this.$notify({
+            group: 'info',
+            title: 'Success',
+            text: 'Job started successfully!'
+            });
+            // this.loading = true
+            // axios.defaults.headers.common["Authorization"] =
+            // "Bearer " + localStorage.getItem("access_token");
+            //  axios
+            //     .post('/api/timers/fill/' + this.label)
+            //     .then(response => {
+            //     window.location.reload()
+            //     })
+            //     .catch(error => {
+            //     console.log(error);
+            //     }).finally(() => (this.loading = false)) 
+        },
+        pause()
+        {
+            this.started = false;
+            this.paused = true;
+            this.$notify({
+            group: 'info',
+            title: 'Pause',
+            text: 'Job paused!'
+            });
+        },
+        endpause()
+        {
+            this.paused = false;
+            this.started = true;
+            this.$notify({
+            group: 'info',
+            title: 'Success',
+            text: 'Job started successfully!'
+            });
+        },
+        end()
+        {
+            console.log("test");
+            this.started = false;
+            this.paused = false;
+            this.$notify({
+            group: 'info',
+            title: 'End',
+            text: 'Job ended!'
+            });
         }
     }
 }

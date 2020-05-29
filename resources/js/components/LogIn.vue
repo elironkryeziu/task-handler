@@ -59,7 +59,11 @@ export default {
         login() {
             if(this.email == "" || this.password == "")
             {
-
+                this.$notify({
+                group: 'error',
+                title: 'Error',
+                text: "Fill email and password"
+                });
             }else
             {
                 axios
@@ -68,14 +72,31 @@ export default {
                 password: this.password
                 })
                 .then(response => {
-                const token = response.data.access_token;
-                localStorage.setItem("access_token", token);
-                this.$router.push('/');
-                //   console.log(response.message);
-                })
+                    if(response.status == 200)
+                    {
+                        const token = response.data.access_token;
+                        localStorage.setItem("access_token", token);
+                        this.$router.push('/');
+                          console.log(response.message);
+                    }
+                    })
                 .catch(error => {
-                console.log(error);
-                });
+                    // if(response.status = 401)
+                    // {
+                    //     this.$notify({
+                    //     group: 'error',
+                    //     title: 'Error',
+                    //     text: "Invalid credentials"
+                    //     });
+                    // }else
+                    // {
+                        this.$notify({
+                        group: 'error',
+                        title: 'Error',
+                        text: error
+                        });
+                    // }
+                    });
             }
         
 
