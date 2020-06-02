@@ -83,22 +83,18 @@ class fillTimers extends Command
             // }
 
             //me i marr prej vendos
-            // $conn_string = "host=89.174.178.194 port=5432 dbname=hcelblag user=hcelb password=homvendo123";
-            // $dbconn = pg_connect($conn_string);
+            $conn_string = env('CONNECT_VENDO','no connection');
+            $dbconn = pg_connect($conn_string);
 
-            // $this->info('Connected!');
-            // $query = pg_query($dbconn, "select * from test");
-            // $this->info('Retrived.');
+            $this->info('Connected!');
+            $query = pg_query($dbconn, "select * from test");
+            $this->info('Retrived.');
 
-            // $result = pg_fetch_all($query);
-            // foreach ($result as $rs) {
-            //     print_r($rs['date']);
-            // }
+            $result = pg_fetch_all($query);
+            foreach ($result as $rs) {
+                print_r($rs['date']);
+            }
             
-            $now = Carbon::now();
-            $tick_time = $now->addMinutes(10);
-            echo $tick_time->format('H:i');
-
     }
 
     public function fillTimer($machine, $start, $finish, $do_per_minute_pcs, $do_per_minute_cbm, $tick_time_minutes, $shift)
