@@ -2,7 +2,8 @@
   <div>
     <Navbar/>
     <div v-if="loading">
-          <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1>
+            <vue-loading type="spin" color="#4299e1" :size="{ width: '100px', height: '500px' }"></vue-loading>    
+          <!-- <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1> -->
     </div>
     <div v-else>
         <h1 class="text-center text-4xl text-black font-medium leading-snug tracking-wider py-6">{{machine.name}}</h1>
@@ -118,12 +119,14 @@
 import Navbar from './Navbar';
 import BaseTimer from "./BaseTimer";
 import axios from 'axios';
-import moment from 'moment'
+import moment from 'moment';
+import { VueLoading } from 'vue-loading-template'
 
 export default {
     components : {
             Navbar,
-            BaseTimer
+            BaseTimer,
+            VueLoading
         },
     data() {
         return {

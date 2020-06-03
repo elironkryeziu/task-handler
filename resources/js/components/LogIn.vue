@@ -4,6 +4,11 @@
     <div class="text-base text-grey-darkest font-normal relative">
 
     <div class="container mx-auto p-8">
+        <div v-if="loading">
+            <vue-loading type="spin" color="#4299e1" :size="{ width: '100px', height: '500px' }"></vue-loading>    
+          <!-- <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1> -->
+        </div>
+        <div v-else>
         <div class="mx-auto max-w-sm">
             <div class="bg-gray-100 rounded shadow">
                 <div class="bg-blue-500 border-b py-8 font-bold text-white text-center text-xl tracking-widest uppercase">
@@ -36,6 +41,7 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
     </div>
         
@@ -45,12 +51,16 @@
 
 <script>
 import Navbar from './Navbar';
+import { VueLoading } from 'vue-loading-template';
+
 export default {
     components : {
-            Navbar
+            Navbar,
+            VueLoading
         },
     data() {
         return {
+            loading: false,
             email: "",
             password: ""    
         }
@@ -66,6 +76,7 @@ export default {
                 });
             }else
             {
+                this.loading = true;
                 axios
                 .post(`api/login`, {
                 email: this.email,
@@ -96,7 +107,7 @@ export default {
                         text: error
                         });
                     // }
-                    });
+                    }).finally(() => (this.loading = false)) ;
             }
         
 

@@ -2,7 +2,8 @@
 <div>
     <Navbar/>
     <div v-if="loading">
-          <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1>
+          <!-- <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1> -->
+          <vue-loading type="spin" color="#4299e1" :size="{ width: '50px', height: '50px' }"></vue-loading>    
     </div>
     <div v-else class="flex flex-col px-6 py-6">
       <AddorEditMachine/>
@@ -95,9 +96,12 @@
 <script>
 import Navbar from './Navbar';
 import AddorEditMachine from './AddorEditMachine';
+import { VueLoading } from 'vue-loading-template';
+
 export default {components : {
             Navbar,
-            AddorEditMachine
+            AddorEditMachine,
+            VueLoading
         },
      data() {
         return {

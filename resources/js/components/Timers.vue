@@ -2,7 +2,8 @@
     <div>
         <Navbar/>
         <div v-if="loading">
-          <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1>
+          <!-- <h1 class="text-center text-black font-medium leading-snug tracking-wider">Loading..</h1> -->
+        <vue-loading type="spin" color="#4299e1" :size="{ width: '50px', height: '50px' }"></vue-loading>    
         </div>
         <div v-else>
         <div class="flex">
@@ -104,10 +105,13 @@
 
 <script>
 import Navbar from './Navbar';
-import moment from 'moment'
+import moment from 'moment';
+import { VueLoading } from 'vue-loading-template';
+
 export default {
     components : {
-        Navbar
+        Navbar,
+        VueLoading
         },
     data() {
         return {
