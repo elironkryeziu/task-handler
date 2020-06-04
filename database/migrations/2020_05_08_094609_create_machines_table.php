@@ -27,6 +27,7 @@ class CreateMachinesTable extends Migration
             $table->string('unit2', 10)->nullable();
             $table->double('working_hours', 8, 2)->nullable();
             $table->double('working_minutes', 8, 2)->nullable();
+            $table->double('break_time', 8, 2)->nullable();
             $table->double('tick_minutes', 8, 2)->nullable();
             $table->integer('workers_number')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
