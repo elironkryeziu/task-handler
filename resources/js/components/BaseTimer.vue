@@ -39,16 +39,18 @@ const COLOR_CODES = {
   }
 };
 
-const TIME_LIMIT = 900;
+// const TIME_LIMIT = 900;
 
 export default {
+  props: {
+    breakTime: Number
+  },
   data() {
     return {
       timePassed: 0,
       timerInterval: null
     };
   },
-
   computed: {
     circleDasharray() {
       return `${(this.timeFraction * FULL_DASH_ARRAY).toFixed(0)} 283`;
@@ -67,12 +69,12 @@ export default {
     },
 
     timeLeft() {
-      return TIME_LIMIT - this.timePassed;
+      return this.breakTime - this.timePassed;
     },
 
     timeFraction() {
-      const rawTimeFraction = this.timeLeft / TIME_LIMIT;
-      return rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction);
+      const rawTimeFraction = this.timeLeft / this.breakTime;
+      return rawTimeFraction - (1 / this.breakTime) * (1 - rawTimeFraction);
     },
 
     remainingPathColor() {

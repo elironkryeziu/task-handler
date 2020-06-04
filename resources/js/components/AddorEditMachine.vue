@@ -53,7 +53,7 @@
                         <input type="number" v-model="inputs.input_whours" placeholder="Working hours" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
                 <div class="w-full mx-2 flex-1 svelte-1l8159u">
-                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Working minutes</div>
+                    <div class="font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"> Break time</div>
                     <div class="bg-white my-2 p-1 flex border border-gray-200 rounded svelte-1l8159u">
                         <input type="number" v-model="inputs.input_break_min" placeholder="Break minutes" class="p-1 px-2 appearance-none outline-none w-full text-gray-800"> </div>
                 </div>
@@ -124,7 +124,7 @@ export default {
                 this.inputs.input_stand_norm2 = event.params.machine.standard_norm2;
                 this.inputs.input_min_norm2 = event.params.machine.min_norm2;
                 this.inputs.input_whours = event.params.machine.working_hours;
-                this.inputs.input_break_min = event.params.machine.working_minutes;
+                this.inputs.input_break_min = event.params.machine.break_time;
                 this.inputs.input_tick_min = event.params.machine.tick_minutes;
                 this.inputs.input_workers_number = event.params.machine.workers_number;
             }
@@ -159,12 +159,11 @@ export default {
                 standard_norm2 : this.inputs.input_stand_norm2,
                 min_norm2 : this.inputs.input_min_norm2,
                 working_hours : this.inputs.input_whours,
-                break_minutes : this.inputs.input_break_min,
+                break_time : this.inputs.input_break_min,
                 tick_minutes : this.inputs.input_tick_min,
                 workers_number : this.inputs.input_workers_number
             })
             .then(
-                // console.log("Updated")
                 this.$modal.hide('add-machine'),
                 window.location.reload()
             )

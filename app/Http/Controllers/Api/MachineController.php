@@ -43,6 +43,7 @@ class MachineController extends Controller
                     "min_norm_cbm" => $machine->min_norm2,
                     "todo_minute_pcs" => round($machine->standard_norm1/$machine->working_minutes, 4),
                     "todo_minute_cbm" => round($machine->standard_norm2/$machine->working_minutes, 4),          
+                    "break_time" => $machine->break_time,
                 ];
             }
     }
@@ -65,7 +66,8 @@ class MachineController extends Controller
             "standard_norm2" => $request->standard_norm2,
             "min_norm2" => $request->min_norm2,
             "working_hours" => $request->working_hours,
-            "working_minutes" => ($request->working_hours*60)-$request->break_minutes,
+            "break_time" => $request->break_time,
+            "working_minutes" => ($request->working_hours*60)-$request->break_time,
             "tick_minutes" => $request->tick_minutes
         ]);
 
@@ -92,7 +94,8 @@ class MachineController extends Controller
             "standard_norm2" => $request->standard_norm2 ?? $request->standard_norm2 ?? $machine->standard_norm2 ,
             "min_norm2" => $request->min_norm2 ?? $request->min_norm2 ?? $machine->min_norm2 ,
             "working_hours" => $request->working_hours ?? $request->working_hours ?? $machine->working_hours ,
-            "working_minutes" => $request->working_minutes ?? $request->working_minutes ?? $machine->working_minutes,
+            "break_time" => $request->break_time ?? $request->break_time ?? $machine->break_time,
+            "working_minutes" => $request->working_minutes ?? ($request->working_hours*60)-$request->break_time ?? $machine->working_minutes,
             // "working_minutes" => $request->working_hours ?? ($request->working_hours*60)-$request->break_minutes ?? $machine->working_minutes ,
             "tick_minutes" => $request->tick_minutes ?? $request->name ?? $machine->tick_minutes,
             "workers_number" => $request->workers_number ?? $request->workers_number ?? $machine->workers_number,

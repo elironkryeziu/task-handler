@@ -142,14 +142,12 @@ export default {
         },
         getData () 
         {
-            // console.log(moment(this.date).format('YYYY-MM-DD'));
-            // console.log(this.label);
             // axios.defaults.headers.common["Authorization"] =
             // "Bearer " + localStorage.getItem("access_token");
             axios.get(`/api/timer/${this.label}?date=${moment(this.date).format('YYYY-MM-DD')}`)
             .then(response=>{
-               this.timers = response.data;
-               console.log(this.timers);
+               this.timers = response.data.timers;
+               console.log(response.data.timers);
             }).catch((error) => {
             if (error.response.status === 404) {
                this.$router.push({ path: '/error' })

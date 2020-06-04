@@ -7,8 +7,9 @@
         <div v-if="loading">
             <vue-loading type="spin" color="#4299e1" :size="{ width: '50px', height: '50px' }"></vue-loading>    
         </div>
-        <div v-else class="grid grid-cols-6">
-            <router-link v-for="machine in machines" :key="machine.id" :to="machine.label" tag="button" class="bg-transparen hover:bg-blue-300 text-xl text-blue-500 font-semibold mr-2 mb-2 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+        <div v-else class="grid md:grid-cols-6">
+            <router-link v-for="machine in machines" :key="machine.id" :to="machine.label" tag="button"
+            class="bg-transparen hover:bg-blue-300 text-xl text-blue-500 font-semibold mr-2 mb-2 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
                 {{machine.name}}</router-link>        
         </div>
         </div>

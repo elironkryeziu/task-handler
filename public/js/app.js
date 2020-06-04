@@ -2195,7 +2195,7 @@ __webpack_require__.r(__webpack_exports__);
         this.inputs.input_stand_norm2 = event.params.machine.standard_norm2;
         this.inputs.input_min_norm2 = event.params.machine.min_norm2;
         this.inputs.input_whours = event.params.machine.working_hours;
-        this.inputs.input_break_min = event.params.machine.working_minutes;
+        this.inputs.input_break_min = event.params.machine.break_time;
         this.inputs.input_tick_min = event.params.machine.tick_minutes;
         this.inputs.input_workers_number = event.params.machine.workers_number;
       }
@@ -2226,11 +2226,10 @@ __webpack_require__.r(__webpack_exports__);
         standard_norm2: this.inputs.input_stand_norm2,
         min_norm2: this.inputs.input_min_norm2,
         working_hours: this.inputs.input_whours,
-        break_minutes: this.inputs.input_break_min,
+        break_time: this.inputs.input_break_min,
         tick_minutes: this.inputs.input_tick_min,
         workers_number: this.inputs.input_workers_number
-      }).then( // console.log("Updated")
-      this.$modal.hide('add-machine'), window.location.reload())["catch"](function (error) {
+      }).then(this.$modal.hide('add-machine'), window.location.reload())["catch"](function (error) {
         return console.log(error);
       });
     },
@@ -2341,9 +2340,12 @@ var COLOR_CODES = {
     color: "red",
     threshold: ALERT_THRESHOLD
   }
-};
-var TIME_LIMIT = 900;
+}; // const TIME_LIMIT = 900;
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    breakTime: Number
+  },
   data: function data() {
     return {
       timePassed: 0,
@@ -2366,11 +2368,11 @@ var TIME_LIMIT = 900;
       return "".concat(minutes, ":").concat(seconds);
     },
     timeLeft: function timeLeft() {
-      return TIME_LIMIT - this.timePassed;
+      return this.breakTime - this.timePassed;
     },
     timeFraction: function timeFraction() {
-      var rawTimeFraction = this.timeLeft / TIME_LIMIT;
-      return rawTimeFraction - 1 / TIME_LIMIT * (1 - rawTimeFraction);
+      var rawTimeFraction = this.timeLeft / this.breakTime;
+      return rawTimeFraction - 1 / this.breakTime * (1 - rawTimeFraction);
     },
     remainingPathColor: function remainingPathColor() {
       var alert = COLOR_CODES.alert,
@@ -2595,6 +2597,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Navbar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Navbar */ "./resources/js/components/Navbar.vue");
 /* harmony import */ var vue_loading_template__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-loading-template */ "./node_modules/vue-loading-template/dist/vueLoading.common.js");
 /* harmony import */ var vue_loading_template__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_loading_template__WEBPACK_IMPORTED_MODULE_1__);
+//
 //
 //
 //
@@ -2962,6 +2965,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -2975,18 +2980,21 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      milliseconds: null,
       timeout: null,
       started: false,
       paused: false,
       loading: false,
       isCbm: false,
       machine: {},
-      timers: {}
+      timers: {},
+      currentTimer: {}
     };
   },
   props: ['label'],
   created: function created() {
-    this.getMachine(), this.getTimers(), this.started = false, this.paused = false;
+    this.getMachine(), // this.getTimers(),
+    this.started = false, this.paused = false;
   },
   methods: {
     getMachine: function getMachine() {
@@ -3005,74 +3013,92 @@ __webpack_require__.r(__webpack_exports__);
         return _this.loading = false;
       });
     },
-    getTimers: function getTimers() {
+    start: function start() {
+      this.loading = true;
+      this.fillTimer();
+      this.notify('Success', 'Job started successfully!');
+      this.started = true;
+      this.loading = false;
+    },
+    fillTimer: function fillTimer() {
       var _this2 = this;
 
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('/api/start/' + this.label).then(function (response) {
+        if (response.status === 200) {
+          _this2.getTimers();
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    getTimers: function getTimers() {
+      var _this3 = this;
+
       axios__WEBPACK_IMPORTED_MODULE_2___default.a.get('/api/timer/' + this.label).then(function (response) {
-        _this2.timers = response.data.timers; // this.timeout = moment(this.currentTimer.tick_time, "HH:mm:ss").diff(moment());
-        // if(this.timeout > 0)
-        // {
-        // this.getNextTimer(this.timeout);
-        // }
+        if (response.status === 200) {
+          _this3.timers = response.data.timers;
+          _this3.currentTimer = response.data.currentTimer;
+          _this3.milliseconds = moment__WEBPACK_IMPORTED_MODULE_3___default()(_this3.currentTimer.tick_time, "HH:mm:ss").diff(moment__WEBPACK_IMPORTED_MODULE_3___default()());
+
+          if (_this3.milliseconds > 0) {
+            _this3.startNextTimer(_this3.milliseconds);
+          }
+        }
       })["catch"](function (error) {
         if (error.response.status === 404) {
-          _this2.$router.push({
+          _this3.$router.push({
             path: '/error'
           });
         }
       });
     },
-    getNextTimer: function getNextTimer($timeout) {
-      var _this3 = this;
+    stopTimer: function stopTimer() {
+      var _this4 = this;
 
-      setTimeout(function () {
-        _this3.getTimers();
-      }, $timeout + 60100);
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.defaults.headers.common["Authorization"] = "Bearer " + localStorage.getItem("access_token");
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('/api/stop/' + this.label).then(function (response) {
+        clearTimeout(_this4.timeout);
+      })["catch"](function (error) {
+        console.log(error);
+      });
     },
-    start: function start() {
-      this.started = true;
-      this.$notify({
-        group: 'info',
-        title: 'Success',
-        text: 'Job started successfully!'
-      }); // this.loading = true
-      // axios.defaults.headers.common["Authorization"] =
-      // "Bearer " + localStorage.getItem("access_token");
-      //  axios
-      //     .post('/api/timers/fill/' + this.label)
-      //     .then(response => {
-      //     window.location.reload()
-      //     })
-      //     .catch(error => {
-      //     console.log(error);
-      //     }).finally(() => (this.loading = false)) 
+    startNextTimer: function startNextTimer($milliseconds) {
+      var _this5 = this;
+
+      this.timeout = setTimeout(function () {
+        _this5.fillTimer();
+      }, $milliseconds);
     },
     pause: function pause() {
+      this.loading = true;
+      this.stopTimer();
       this.started = false;
       this.paused = true;
-      this.$notify({
-        group: 'info',
-        title: 'Pause',
-        text: 'Job paused!'
-      });
+      this.notify('Pause', 'Job paused!');
+      this.loading = false;
     },
     endpause: function endpause() {
+      this.loading = true;
+      this.fillTimer();
       this.paused = false;
       this.started = true;
-      this.$notify({
-        group: 'info',
-        title: 'Success',
-        text: 'Job started successfully!'
-      });
+      this.notify('Success', 'Job started successfully!');
+      this.loading = false;
     },
     end: function end() {
-      console.log("test");
+      this.loading = true;
+      this.stopTimer();
       this.started = false;
       this.paused = false;
+      this.notify('End', 'Job ended!');
+      this.loading = false;
+    },
+    notify: function notify(title, text) {
       this.$notify({
         group: 'info',
-        title: 'End',
-        text: 'Job ended!'
+        title: title,
+        text: text
       });
     }
   }
@@ -3093,6 +3119,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AddorEditMachine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AddorEditMachine */ "./resources/js/components/AddorEditMachine.vue");
 /* harmony import */ var vue_loading_template__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-loading-template */ "./node_modules/vue-loading-template/dist/vueLoading.common.js");
 /* harmony import */ var vue_loading_template__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vue_loading_template__WEBPACK_IMPORTED_MODULE_2__);
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3285,9 +3317,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      isOpen: false,
       isLoggedIn: false
     };
   },
@@ -3592,13 +3626,11 @@ __webpack_require__.r(__webpack_exports__);
     getData: function getData() {
       var _this2 = this;
 
-      // console.log(moment(this.date).format('YYYY-MM-DD'));
-      // console.log(this.label);
       // axios.defaults.headers.common["Authorization"] =
       // "Bearer " + localStorage.getItem("access_token");
       axios.get("/api/timer/".concat(this.label, "?date=").concat(moment__WEBPACK_IMPORTED_MODULE_1___default()(this.date).format('YYYY-MM-DD'))).then(function (response) {
-        _this2.timers = response.data;
-        console.log(_this2.timers);
+        _this2.timers = response.data.timers;
+        console.log(response.data.timers);
       })["catch"](function (error) {
         if (error.response.status === 404) {
           _this2.$router.push({
@@ -61856,7 +61888,7 @@ var render = function() {
                   staticClass:
                     "font-bold h-6 mt-3 text-gray-600 text-xs leading-8 uppercase"
                 },
-                [_vm._v(" Working minutes")]
+                [_vm._v(" Break time")]
               ),
               _vm._v(" "),
               _c(
@@ -62623,7 +62655,7 @@ var render = function() {
               )
             : _c(
                 "div",
-                { staticClass: "grid grid-cols-6" },
+                { staticClass: "grid md:grid-cols-6" },
                 _vm._l(_vm.machines, function(machine) {
                   return _c(
                     "router-link",
@@ -62953,7 +62985,16 @@ var render = function() {
                     [_vm._v("End job")]
                   ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "py-10" }, [_c("BaseTimer")], 1)
+                  _c(
+                    "div",
+                    { staticClass: "py-10" },
+                    [
+                      _c("BaseTimer", {
+                        attrs: { breakTime: _vm.machine.break_time * 60 }
+                      })
+                    ],
+                    1
+                  )
                 ])
               : _c("div", [
                   _c("div", { staticClass: "mx-auto text-center py-6 px-6" }, [
@@ -63198,7 +63239,82 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
-                    _vm._m(2)
+                    _c("table", { staticClass: "mx-auto text-2xl" }, [
+                      _vm._m(2),
+                      _vm._v(" "),
+                      _c("tbody", [
+                        _c("tr", [
+                          _vm.currentTimer.tick_time
+                            ? _c(
+                                "td",
+                                {
+                                  staticClass:
+                                    "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm._f("timeformat")(
+                                        _vm.currentTimer.tick_time
+                                      )
+                                    )
+                                  )
+                                ]
+                              )
+                            : _c(
+                                "td",
+                                {
+                                  staticClass:
+                                    "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                                },
+                                [_vm._v("Tick Time")]
+                              ),
+                          _vm._v(" "),
+                          _vm.currentTimer.to_do_pcs
+                            ? _c(
+                                "td",
+                                {
+                                  staticClass:
+                                    "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.isCbm
+                                        ? _vm.currentTimer.to_do_cbm
+                                        : _vm.currentTimer.to_do_pcs
+                                    )
+                                  )
+                                ]
+                              )
+                            : _c(
+                                "td",
+                                {
+                                  staticClass:
+                                    "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.isCbm
+                                        ? _vm.currentTimer.to_do_cbm
+                                        : _vm.currentTimer.to_do_pcs
+                                    )
+                                  )
+                                ]
+                              ),
+                          _vm._v(" "),
+                          _c(
+                            "td",
+                            {
+                              staticClass:
+                                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
+                            },
+                            [_vm._v("0")]
+                          )
+                        ])
+                      ])
+                    ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "flex px-6 py-6" }, [
@@ -63313,58 +63429,25 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("table", { staticClass: "mx-auto text-2xl" }, [
-      _c("thead", [
-        _c("tr", [
-          _c(
-            "th",
-            { staticClass: "rounded-t relative -mb-px border p-4 border-grey" },
-            [_vm._v("Time")]
-          ),
-          _vm._v(" "),
-          _c(
-            "th",
-            { staticClass: "rounded-t relative -mb-px border p-4 border-grey" },
-            [_vm._v("To do:")]
-          ),
-          _vm._v(" "),
-          _c(
-            "th",
-            { staticClass: "rounded-t relative -mb-px border p-4 border-grey" },
-            [_vm._v("Done:")]
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("tbody", [
-        _c("tr", [
-          _c(
-            "td",
-            {
-              staticClass:
-                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-            },
-            [_vm._v("Tick time")]
-          ),
-          _vm._v(" "),
-          _c(
-            "td",
-            {
-              staticClass:
-                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-            },
-            [_vm._v("To do")]
-          ),
-          _vm._v(" "),
-          _c(
-            "td",
-            {
-              staticClass:
-                "rounded-t relative -mb-px border p-4 border-grey font-semibold"
-            },
-            [_vm._v("0")]
-          )
-        ])
+    return _c("thead", [
+      _c("tr", [
+        _c(
+          "th",
+          { staticClass: "rounded-t relative -mb-px border p-4 border-grey" },
+          [_vm._v("Time")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          { staticClass: "rounded-t relative -mb-px border p-4 border-grey" },
+          [_vm._v("To do:")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          { staticClass: "rounded-t relative -mb-px border p-4 border-grey" },
+          [_vm._v("Done:")]
+        )
       ])
     ])
   },
@@ -63618,6 +63701,21 @@ var render = function() {
                                 [
                                   _vm._v(
                                     "\r\n              " +
+                                      _vm._s(machine.break_time) +
+                                      "\r\n            "
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "td",
+                                {
+                                  staticClass:
+                                    "px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-900"
+                                },
+                                [
+                                  _vm._v(
+                                    "\r\n              " +
                                       _vm._s(machine.tick_minutes) +
                                       "\r\n            "
                                   )
@@ -63762,6 +63860,15 @@ var staticRenderFns = [
             staticClass:
               "px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
           },
+          [_vm._v("\r\n              Break minutes\r\n            ")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          {
+            staticClass:
+              "px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider"
+          },
           [_vm._v("\r\n              Tick minutes\r\n            ")]
         ),
         _vm._v(" "),
@@ -63802,180 +63909,174 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "nav",
-      {
-        staticClass:
-          "font-sans relative select-none shadow-md bg-blue-500 lg:flex lg:items-stretch w-full"
-      },
-      [
-        _c(
-          "div",
-          { staticClass: "flex flex-no-shrink items-stretch h-12" },
-          [
+  return _c(
+    "header",
+    {
+      staticClass:
+        "bg-blue-500 sm:flex sm:justify-between sm:items-center sm:px-4 sm:py-3"
+    },
+    [
+      _c("div", { staticClass: "flex items-center justify-between sm:p-0" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "sm:hidden" }, [
+          _c(
+            "button",
+            {
+              staticClass:
+                "block text-white hover:text-gray-500 focus:text-gray-500 focus:outline-none",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  _vm.isOpen = !_vm.isOpen
+                }
+              }
+            },
+            [
+              _c(
+                "svg",
+                {
+                  staticClass: "h-6 w-6 fill-current",
+                  attrs: { viewBox: "0 0 24 24" }
+                },
+                [
+                  _vm.isOpen
+                    ? _c("path", {
+                        attrs: {
+                          "fill-rule": "evenodd",
+                          d:
+                            "M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 1 1 1.414 1.414l-4.828 4.829 4.828 4.828z"
+                        }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
+                  !_vm.isOpen
+                    ? _c("path", {
+                        attrs: {
+                          "fill-rule": "evenodd",
+                          d:
+                            "M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"
+                        }
+                      })
+                    : _vm._e()
+                ]
+              )
+            ]
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _vm.isLoggedIn
+        ? _c("div", [
             _c(
-              "router-link",
+              "nav",
               {
-                staticClass:
-                  "text-2xl no-underline text-white px-6 py-2 font-sans font-bold",
-                attrs: { to: "/" }
-              },
-              [_vm._v("Timer!")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass:
-                  "block lg:hidden cursor-pointer ml-auto relative w-12 h-12 p-4"
+                staticClass: "px-2 pt-2 pb-4 sm:flex sm:p-0",
+                class: _vm.isOpen ? "block" : "hidden"
               },
               [
                 _c(
-                  "svg",
+                  "router-link",
                   {
-                    staticClass: "fill-current text-white",
-                    attrs: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      viewBox: "0 0 20 20"
-                    }
+                    staticClass:
+                      "block px-2 py-1 text-white font-semibold rounded hover:bg-blue-700",
+                    attrs: { to: "/" }
                   },
-                  [
-                    _c("path", {
-                      attrs: {
-                        d: "M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"
-                      }
-                    })
-                  ]
+                  [_vm._v("HOME")]
                 ),
                 _vm._v(" "),
                 _c(
-                  "svg",
+                  "router-link",
                   {
-                    staticClass: "fill-current text-white",
-                    attrs: {
-                      xmlns: "http://www.w3.org/2000/svg",
-                      viewBox: "0 0 20 20"
-                    }
+                    staticClass:
+                      "mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-blue-700 sm:mt-0 sm:ml-2",
+                    attrs: { to: "/admin/timers" }
                   },
-                  [
-                    _c("path", {
-                      attrs: {
-                        d:
-                          "M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"
-                      }
-                    })
-                  ]
+                  [_vm._v("TIMERS")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass:
+                      "mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-blue-700 sm:mt-0 sm:ml-2",
+                    attrs: { to: "/admin/machines" }
+                  },
+                  [_vm._v("MACHINES")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass:
+                      "mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-blue-700 sm:mt-0 sm:ml-2",
+                    attrs: { to: "/admin/departments" }
+                  },
+                  [_vm._v("DEPARTMENTS")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass:
+                      "mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-blue-700 sm:mt-0 sm:ml-2",
+                    attrs: { to: "/logout" }
+                  },
+                  [_vm._v("LOG OUT")]
                 )
-              ]
+              ],
+              1
             )
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass:
-              "lg:flex lg:items-stretch lg:flex-no-shrink lg:flex-grow"
-          },
-          [
-            _vm.isLoggedIn
-              ? _c(
-                  "div",
+          ])
+        : _c("div", [
+            _c(
+              "nav",
+              {
+                staticClass: "px-2 pt-2 pb-4 sm:flex sm:p-0",
+                class: _vm.isOpen ? "block" : "hidden"
+              },
+              [
+                _c(
+                  "router-link",
                   {
                     staticClass:
-                      "lg:flex lg:items-stretch lg:justify-end ml-auto"
+                      "block px-2 py-1 text-white font-semibold rounded hover:bg-blue-700",
+                    attrs: { to: "/" }
                   },
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider",
-                        attrs: { to: "/" }
-                      },
-                      [_vm._v("\n              Home")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider",
-                        attrs: { to: "/admin/timers" }
-                      },
-                      [_vm._v("\n              Timers")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider",
-                        attrs: { to: "/admin/machines" }
-                      },
-                      [_vm._v("\n              Machines")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider",
-                        attrs: { to: "/admin/departments" }
-                      },
-                      [_vm._v("\n              Departments")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider",
-                        attrs: { to: "/logout" }
-                      },
-                      [_vm._v("\n              Signout")]
-                    )
-                  ],
-                  1
-                )
-              : _c(
-                  "div",
+                  [_vm._v("HOME")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
                   {
                     staticClass:
-                      "lg:flex lg:items-stretch lg:justify-end ml-auto"
+                      "mt-1 block px-2 py-1 text-white font-semibold rounded hover:bg-blue-700 sm:mt-0 sm:ml-2",
+                    attrs: { to: "/logout" }
                   },
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider",
-                        attrs: { to: "/" }
-                      },
-                      [_vm._v("\n              Home")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass:
-                          "bg-blue-500 px-6 py-3 hover:bg-blue-300 w-full p-2 text-sm text-white uppercase font-bold tracking-wider",
-                        attrs: { to: "/login" }
-                      },
-                      [_vm._v("\n              Login")]
-                    )
-                  ],
-                  1
+                  [_vm._v("LOG IN")]
                 )
-          ]
-        )
-      ]
-    )
-  ])
+              ],
+              1
+            )
+          ])
+    ]
+  )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", [
+      _c("a", { attrs: { href: "/" } }, [
+        _c("img", {
+          staticClass: "w-40 px-3 h-10",
+          attrs: { src: "/storage/HC.png", alt: "logo" }
+        })
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 

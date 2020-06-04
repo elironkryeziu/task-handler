@@ -35,4 +35,6 @@ Route::get('/{label}', 'Api\MachineController@show');
 
 //timers
 Route::get('/timer/{label}', 'Api\TimerController@index');
-Route::post('/timers/fill/{label}', 'Api\TimerController@fillTimer');
+Route::post('/start/{label}', 'Api\TimerController@startTimer');
+Route::post('/stop/{label}', 'Api\TimerController@stopTimer');
+

@@ -14,7 +14,7 @@
         <button @click="endpause" class="cursor-pointer bg-green-600 hover:bg-green-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">End Break time</button>
         <button @click="end" class="cursor-pointer bg-red-600 hover:bg-red-500 shadow-xl px-5 py-2 inline-block text-green-100 hover:text-white rounded">End job</button>
         <div class="py-10">
-            <BaseTimer/>
+            <BaseTimer :breakTime="(machine.break_time)*60" />
         </div>
         </div>
         <div v-else>
@@ -77,10 +77,12 @@
         </thead>
         <tbody>
         <tr>
-        <!-- <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ currentTimer.tick_time | timeformat }}</td> -->
-        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">Tick time</td>
-        <!-- <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? currentTimer.to_do_cbm : currentTimer.to_do_pcs }}</td> -->
-        <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">To do</td>
+        <td v-if="currentTimer.tick_time" class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ currentTimer.tick_time | timeformat }}</td>
+        <td v-else class="rounded-t relative -mb-px border p-4 border-grey font-semibold">Tick Time</td>
+        <!-- <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">Tick time</td> -->
+        <td v-if="currentTimer.to_do_pcs" class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? currentTimer.to_do_cbm : currentTimer.to_do_pcs }}</td>
+        <td v-else class="rounded-t relative -mb-px border p-4 border-grey font-semibold">{{ isCbm ? currentTimer.to_do_cbm : currentTimer.to_do_pcs }}</td>
+        <!-- <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">To do</td> -->
         <td class="rounded-t relative -mb-px border p-4 border-grey font-semibold">0</td>
         </tr>
         </tbody>
@@ -130,6 +132,7 @@ export default {
         },
     data() {
         return {
+            milliseconds: null,
             timeout: null,
             started: false,
             paused: false,
@@ -137,6 +140,7 @@ export default {
             isCbm : false,
             machine : {},
             timers : {},
+            currentTimer : {}
         }
     },
     props : [
@@ -144,7 +148,7 @@ export default {
     ],
     created() {
         this.getMachine(),
-        this.getTimers(),
+        // this.getTimers(),
         this.started = false,
         this.paused = false
     },
@@ -161,75 +165,101 @@ export default {
             }
             }).finally(() => (this.loading = false)) 
         },
-        getTimers ()
-        {
-            axios.get('/api/timer/' + this.label)
-            .then(response=>{
-                this.timers = response.data.timers;
-                // this.timeout = moment(this.currentTimer.tick_time, "HH:mm:ss").diff(moment());
-                // if(this.timeout > 0)
-                // {
-                // this.getNextTimer(this.timeout);
-                // }
-            }).catch((error) => {
-                if (error.response.status === 404) {
-                this.$router.push({ path: '/error' })
-                }
-            }) 
-        },
-        getNextTimer ($timeout) 
-        {
-           setTimeout(() => {this.getTimers()}, $timeout + 60100);
-        },
         start() 
         {
+            this.loading = true;
+            this.fillTimer();
+            this.notify('Success','Job started successfully!');
             this.started = true;
-            this.$notify({
-            group: 'info',
-            title: 'Success',
-            text: 'Job started successfully!'
-            });
-            // this.loading = true
-            // axios.defaults.headers.common["Authorization"] =
-            // "Bearer " + localStorage.getItem("access_token");
-            //  axios
-            //     .post('/api/timers/fill/' + this.label)
-            //     .then(response => {
-            //     window.location.reload()
-            //     })
-            //     .catch(error => {
-            //     console.log(error);
-            //     }).finally(() => (this.loading = false)) 
+            this.loading = false;
+        },
+        fillTimer()
+        {
+            axios.defaults.headers.common["Authorization"] =
+            "Bearer " + localStorage.getItem("access_token");
+             axios
+                .post('/api/start/' + this.label)
+                .then(response => {
+                    if(response.status === 200)
+                    {
+                        this.getTimers()
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+        getTimers ()
+        {       
+            axios.get('/api/timer/' + this.label)
+                .then(response=>{
+                    if(response.status === 200)
+                    {
+                        this.timers = response.data.timers;
+                        this.currentTimer = response.data.currentTimer;
+                        this.milliseconds = moment(this.currentTimer.tick_time, "HH:mm:ss").diff(moment());
+                        if(this.milliseconds > 0)
+                        {
+                            this.startNextTimer(this.milliseconds);
+                        }
+                    }
+                }).catch((error) => {
+                    if (error.response.status === 404) {
+                        this.$router.push({ path: '/error' })
+                    }
+                }) 
+            
+        },
+        stopTimer()
+        {
+             axios.defaults.headers.common["Authorization"] =
+            "Bearer " + localStorage.getItem("access_token");
+             axios
+                .post('/api/stop/' + this.label)
+                .then(response => {
+                    clearTimeout(this.timeout);
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+        startNextTimer ($milliseconds)
+        {
+            this.timeout = setTimeout(() => {this.fillTimer()}, $milliseconds);
         },
         pause()
         {
+            this.loading = true;
+            this.stopTimer();
             this.started = false;
             this.paused = true;
-            this.$notify({
-            group: 'info',
-            title: 'Pause',
-            text: 'Job paused!'
-            });
+            this.notify('Pause','Job paused!');
+            this.loading = false;
         },
         endpause()
         {
+            this.loading = true;
+            this.fillTimer();
             this.paused = false;
             this.started = true;
-            this.$notify({
-            group: 'info',
-            title: 'Success',
-            text: 'Job started successfully!'
-            });
+            this.notify('Success','Job started successfully!');
+            this.loading = false;
         },
         end()
         {
-            console.log("test");
+            this.loading = true;
+            this.stopTimer();
             this.started = false;
             this.paused = false;
+            this.notify('End','Job ended!');
+            this.loading = false;
+        },
+        notify(title,text)
+        {
             this.$notify({
             group: 'info',
-            title: 'End',
-            text: 'Job ended!'
+            title: title,
+            text: text
             });
         }
     }
